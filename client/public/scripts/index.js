@@ -1,14 +1,14 @@
 const buttons = {
     created: `<span class="buttons">
-                <button>Reject</button>
+                <button onClick="rejectOrder(this)">Reject</button>
                 <button onClick="acceptOrder(this)">Accept</button>
             </span>`,
     progress: `<span class="buttons">
-                <button>Finished</button>
+                <button onClick="finishOrder(this)">Finished</button>
             </span>`,
     done: `<span class="buttons">
-                <button>In progress</button>
-                <button>Archive</button>
+                <button onClick="reProgress(this)">In progress</button>
+                <button onClick="archive(this)">Archive</button>
             </span>`,
 }
 
