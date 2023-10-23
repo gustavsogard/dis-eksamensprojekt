@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+}
+
+p {
+    margin: 0;
+}
+
+.header {
+    height: 40px;
+    background-color: #f7c1d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#board {
+    width: 100%;
+    display: flex;
+}
+
+#board > div {
+    width: 33%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+#created {
+    background-color: #c1d9f7;
+}
+
+#progress {
+    background-color: #f3de9a;
+}
+
+#done {
+    background-color: #a6e573;
+}
+
+.order {
+    background-color: white;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+.order button {
+    cursor: pointer;
+}
