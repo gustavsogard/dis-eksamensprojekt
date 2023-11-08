@@ -13,7 +13,7 @@ const buttons = {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const orders = await fetch('http://localhost:3000/orders')
+    const orders = await fetch('/orders')
         .then(response => response.json());
     console.log(orders);
 
