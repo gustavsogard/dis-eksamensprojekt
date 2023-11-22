@@ -15,7 +15,7 @@ const buttons = {
 document.addEventListener('DOMContentLoaded', async () => {
     const orders = await fetch('http://localhost:3000/orders')
         .then(response => response.json());
-    console.log(orders);
+
 
     const createdColumn = document.querySelector('#created');
     const progressColumn = document.querySelector('#progress');
@@ -40,5 +40,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (order.status === 'done') {
             doneColumn.appendChild(orderElement);
         }
-    }
-)})
+    })
+})
