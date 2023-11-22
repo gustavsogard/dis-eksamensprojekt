@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const { v4: uuidv4 } = require('uuid');
 const app = express();
 const port = 3000
+const bcrypt = require("bcrypt");
+const sqlite3 = require("sqlite3").verbose();
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -15,6 +17,34 @@ const path = require("path")
 http.listen(port, host, () => {
     console.log('Server running...')
 })
+const salt_rounds = 10;
+
+
+// 3 stores med 3 hashede passwords
+const stores = [
+    { id: uuidv4(), store_name: 'Copenhagen', password: 'testCPH'},
+    { id: uuidv4(), store_name: 'London', password: 'testLD'},
+    { id: uuidv4(), store_name: 'New York', password: 'testNY'}
+]
+
+// SQLite database
+const db = new sqlite3.Database("./db.sqlite");
+
+db.serialize(function () {
+  console.log("creating databases if they don't exist");
+  db.run(
+    "create table if not exists stores (id text primary key , store_name text NOT NULL UNIQUE, password text NOT NULL)"
+  );
+  stores.forEach(async (store) =>  {
+      db.run(
+          `insert into stores values (?, ?, ?)`,
+            [store.id, store.store_name, await bcrypt.hash(store.password, salt_rounds)]
+          )
+  })
+});
+
+
+
 
 const orders = [
     { id: 1, status: 'created', customer: 'Donald', products: [
