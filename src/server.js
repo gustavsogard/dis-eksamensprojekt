@@ -35,12 +35,24 @@ db.serialize(function () {
   db.run(
     "create table if not exists stores (id text primary key , store_name text NOT NULL UNIQUE, password text NOT NULL)"
   );
-  stores.forEach(async (store) =>  {
-      db.run(
-          `insert into stores values (?, ?, ?)`,
-            [store.id, store.store_name, await bcrypt.hash(store.password, salt_rounds)]
-          )
-  })
+
+(async () => {
+    stores.forEach(async (store) => {
+        db.get(`SELECT * FROM stores WHERE store_name = ?`, [store.store_name], (err, row) => {
+            if (err) {
+                console.error(err.message);
+            }
+            if (row) {
+                console.log(`Store with name ${store.store_name} already exists.`);
+            } else {
+                db.run(
+                    `INSERT INTO stores VALUES (?, ?, ?)`,
+                    [store.id, store.store_name, bcrypt.hashSync(store.password, salt_rounds)]
+                );
+            }
+        });
+    });
+})();
 });
 
 
