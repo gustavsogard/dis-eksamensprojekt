@@ -41,3 +41,16 @@ function authenticate() {
         }
     })
 }
+
+// JavaScript to toggle password visibility
+function togglePasswordVisibility() {
+    var passwordInput = document.getElementById('password-input');
+    var togglePassword = document.getElementById('toggle-password');
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        togglePassword.textContent = "Hide";
+    } else {
+        passwordInput.type = "password";
+        togglePassword.textContent = "Show";
+    }
+}

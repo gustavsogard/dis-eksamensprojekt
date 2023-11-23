@@ -16,7 +16,11 @@
             <option value="New York">New York</option>
             <!-- Add other locations -->
         </select>
-        <input type="password" id="password-input" placeholder="Enter Password">
+        <div class="password-container">
+            <input type="password" id="password-input" placeholder="Enter Password">
+            <span onclick="togglePasswordVisibility()" id="toggle-password">Show pass</span>
+        </div>
+        
         <button onclick="authenticate()">Submit</button>
     </div>
 </body>
