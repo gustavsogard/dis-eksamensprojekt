@@ -84,3 +84,4 @@ socket.on("newOrder", order => {
     const createdColumn = document.querySelector("#created");
     createdColumn.appendChild(orderElement);
 })
+
