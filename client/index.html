@@ -8,23 +8,6 @@
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
     <script src="public/scripts/index.js"></script>
     <script src="public/scripts/functions.js"></script>
-    <script>
-        const token = localStorage.getItem('jwt'); // Retrieve the stored token
-        console.log(token);
-        if (!token) {
-            window.location.href = '/login'; // Redirect to login if no token
-            return;
-        }
-        fetch('/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`, // Send the token in the header
-                'Content-type': 'application/json'
-            }
-        }) 
-        
-
-    </script>
 </head>
 <body>
     <div class="header">

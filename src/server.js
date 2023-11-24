@@ -22,8 +22,16 @@ const path = require("path")
 http.listen(port, host, () => {
     console.log('Server running...')
 })
-const salt_rounds = 10;
 
+const orders = [
+    { id: 1, status: 'created', customer: 'Donald', products: [
+        { id: 1, name: 'Avocado Sandwich' },
+        { id: 2, name: 'Juice' },
+    ] },
+    { id: 2, status: 'created', customer: 'Donald', products: [
+        { id: 1, name: 'Avocado Sandwich' },
+    ] },
+]
 
 // 3 stores med 3 hashede passwords
 const stores = [
@@ -36,11 +44,17 @@ const stores = [
 const db = new sqlite3.Database("./db.sqlite");
 
 db.serialize(function () {
-  console.log("creating databases if they don't exist");
+  console.log("Creating databases if they don't exist");
   db.run(
-    "create table if not exists stores (id text primary key , store_name text NOT NULL UNIQUE, password text NOT NULL)"
-  );
-
+    "CREATE TABLE IF NOT EXISTS stores (id text PRIMARY KEY , store_name text NOT NULL UNIQUE, password text NOT NULL)"
+  )
+  db.run(
+    "CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, status TEXT NOT NULL, customer TEXT NOT NULL, products TEXT NOT NULL)"
+    );
+  
+// laver 10 salt rounds  
+const salt_rounds = 10;
+// hasher storepassword, og tjekker om store allerede findes i databasen
 (async () => {
     stores.forEach(async (store) => {
         db.get(`SELECT * FROM stores WHERE store_name = ?`, [store.store_name], (err, row) => {
@@ -48,7 +62,7 @@ db.serialize(function () {
                 console.error(err.message);
             }
             if (row) {
-                console.log(`Store with name ${store.store_name} already exists.`);
+                return;
             } else {
                 db.run(
                     `INSERT INTO stores VALUES (?, ?, ?)`,
@@ -56,6 +70,25 @@ db.serialize(function () {
                 );
             }
         });
+    });
+})();
+(async () => {
+    // Check if orders already exist
+    db.get('SELECT COUNT(*) as count FROM orders', (err, row) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        if (row.count > 0) {
+            return;
+        }
+        else {
+            orders.forEach(async (order) => {
+                db.run(
+                    'INSERT INTO orders VALUES (?, ?, ?, ?)',
+                    [order.id, order.status, order.customer, JSON.stringify(order.products)]
+                );
+            });
+        }
     });
 })();
 });
@@ -68,18 +101,17 @@ const authenticateToken = (req, res, next) => {
     // Check om der er en token, og om requested path er login siden
     if(req.path === '/login') {
 
-    if(token){
-        console.log("User has token");
-        jwt.verify(token, secret_key, (err,) => {
-            if (err) {
-                return res.status(403).json({ message: "Invalid token" });
-            } else {
-                // hvis der er en valid token sendes personen til dashboardet.
-                console.log("valid token, redirecting to '/'");
-                res.redirect('/');
-            } 
-            
-          });
+        if(token){
+            console.log("User has token");
+            jwt.verify(token, secret_key, (err,) => {
+                if (err) {
+                    return res.status(403).json({ message: "Invalid token" });
+                } else {
+                    // hvis der er en valid token sendes personen til dashboardet.
+                    console.log("valid token, redirecting to '/'");
+                    res.redirect('/');
+                } 
+            });
         } else{
             console.log("No token, serving '/login");
             // middlewaren afsluttes og personen bliver sendt videre
@@ -100,7 +132,7 @@ const authenticateToken = (req, res, next) => {
     });
   };
 
-  app.route("/login")
+app.route("/login")
   .get(authenticateToken ,(req, res) => res.sendFile(path.join(__dirname, '../client/login.html')))
   
 
@@ -110,13 +142,19 @@ app.route("/")
       // dette gør at der bliver tjekket for token, hvis der er en korrekt token bliver orders vist
     res.sendFile(path.join(__dirname, '../client/index.html'))
   })
-  .post((req, res) => {
-    const order = req.body
-    order.id = orders.length + 1
-    order.status = "created"
-    orders.push(order)
-    io.emit("newOrder", order)
-    res.json(order)
+  
+  
+app.route("/orders")
+    .get((req, res) => {  
+        res.json(orders)
+    })
+    .post((req, res) => {
+        const order = req.body
+        order.id = orders.length + 1
+        order.status = "created"
+        orders.push(order)
+        io.emit("newOrder", order)
+        res.json(order)
   });
 
 // verifyPassword() for copenhagen function
@@ -155,15 +193,15 @@ app.route("/authentication")
 
 
 
-const orders = [
-    { id: 1, status: 'created', customer: 'Donald', products: [
-        { id: 1, name: 'Avocado Sandwich' },
-        { id: 2, name: 'Juice' },
-    ] },
-    { id: 2, status: 'created', customer: 'Donald', products: [
-        { id: 1, name: 'Avocado Sandwich' },
-    ] },
-]
+const statusChange = ((orderId, status) => {
+    db.serialize(() => {
+        db.run(`UPDATE orders SET status = '${status}' WHERE id = ?`, [orderId], (err) => {
+            if (err) {
+                console.error(err.message);
+            }
+        });
+    })
+})
 
 io.on("connection", socket => {
     socket.on('disconnect', () => {
@@ -172,21 +210,25 @@ io.on("connection", socket => {
 
     socket.on('orderAccepted', orderId => {
         io.emit('orderAccepted', orderId);
+        statusChange(orderId, 'progress');
         orders.find(order => order.id == orderId).status = 'progress';
     })
 
     socket.on("orderFinished", orderId => {
         io.emit("orderFinished", orderId);
+        statusChange(orderId, 'done');
         orders.find(order => order.id == orderId).status = 'done';
     });
 
     socket.on("orderArchived", orderId => {
         io.emit("orderArchived", orderId);
+        statusChange(orderId, 'archived');
         orders.find(order => order.id == orderId).status = 'archived';
     })
 
     socket.on("orderRejected", orderId => {
         io.emit("orderRejected", orderId);
+        statusChange(orderId, 'rejected');
         orders.find(order => order.id == orderId).status = 'rejected';
     })
 })
