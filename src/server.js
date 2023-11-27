@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const sqlite3 = require("sqlite3").verbose();
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+
 const secret_key = "Joe's secret key";
 
 
@@ -121,7 +122,9 @@ const authenticateToken = (req, res, next) => {
     }
     // hvis ingen token findes skrives fejl
     if (!token) {
-      return res.status(401).json({ message: "Token not provided" });
+        console.log("No token, serving '/login");
+        res.redirect('/login');
+        return;
     }
     // Check om token er valid
     jwt.verify(token, secret_key, (err,) => {
