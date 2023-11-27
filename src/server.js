@@ -128,9 +128,8 @@ const authenticateToken = (req, res, next) => {
         }
       });
     } else {
-      console.log("No token, serving '/login");
-      // middlewaren afsluttes og personen bliver sendt videre
-      next();
+      // hvis token ikke er valid sendes personen til login siden
+      res.redirect("/login");
       return;
     }
   }
