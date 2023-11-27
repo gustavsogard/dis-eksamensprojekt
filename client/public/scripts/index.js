@@ -15,7 +15,10 @@ const buttons = {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const orders = await fetch('/orders')
+    const orders = await fetch('/orders', {
+        method: "GET",
+        credentials: "include",
+    })
         .then(response => response.json());
 
 
