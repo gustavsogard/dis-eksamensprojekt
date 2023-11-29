@@ -120,7 +120,7 @@ const authenticateToken = (req, res, next) => {
       jwt.verify(token, secret_key, (err) => {
         if (err) {
           // hvis token ikke er valid sendes personen til login siden
-          res.redirect("/login");
+          console.log("invalid token");
         } else {
           // hvis der er en valid token sendes personen til dashboardet.
           console.log("valid token, redirecting to '/'");
