@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joe Board</title>
     <link rel="stylesheet" href="public/global.css">
+    <link rel="stylesheet" href="public/popup.css">
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
     <script src="public/scripts/index.js"></script>
     <script src="public/scripts/functions.js"></script>
+    <script src="public/scripts/addOrders.js"></script>
 </head>
 <body>
     <div class="header">
@@ -26,5 +28,76 @@
             <p>Done</p>
         </div>
     </div>
+    <div>
+        <div class="container">
+            <a data-modal="modal-one" id="addOrdersBtn">Add orders</a>
+        </div>
+        
+        <div class="modal" id="modal-one">
+            <div class="modal-bg modal-exit"></div>
+            <div class="modal-container" id="addOrdersContainer">
+                <h2>Create Order</h2>
+
+                <form action="#" method="post">
+                    <!-- Customer Name -->
+                    <label for="customerName">Customer Name:</label>
+                    <input type="text" id="customerName" name="customerName">
+
+                    <!-- Phone Number -->
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-7]{8}" placeholder="Enter 10-digit phone number">
+                    
+                    <!-- Product Selection -->
+                    <label>Products:</label>
+
+                    <!-- Dummy products for Category 1 -->
+                    <div id="juicesCategoryContainer">
+                        <h3>Juices</h3>
+                        <span>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Sports Juice">Sports Juice</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Energizer">Energizer</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Green Tonic">Green Tonic</button>
+                        </span>
+                    </div>
+                        
+                    <div id="sandwichesCategoryContainer">
+                        <h3>Sandwiches</h3>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Tunacado">Tunacado</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Spicy Tuna">Spicy Tuna</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="JOEs Club">JOEs Club</button>
+                    </div>
+
+                    <div id="coffeesCategoryContainer">
+                        <h3>Coffees</h3>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Latte">Latte</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Americano">Americano</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Flat White">Flat White</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Cappucino">Cappucino</button>
+
+                    </div>
+
+                    <div id="othersCategoryContainer">
+                        <h3>Other</h3>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Brownie">Brownie</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Cookie">Cookie</button>
+                        <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Ginger Shot">Ginger Shot</button>
+                    </div>
+
+                    
+                </form>
+                <button class="modal-close modal-exit">X</button>
+            </div>
+            <div id="currentOrder">
+                <h1>Current Order</h1>
+                <div id="currentOrderList">
+                   
+                </div>
+                <!-- Submit Button -->
+                <input id="submitOrder" type="submit" value="Place Order" onclick="submitOrder()">
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
+
