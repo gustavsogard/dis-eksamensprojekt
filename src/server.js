@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const sqlite3 = require("sqlite3").verbose();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const cookie = require("cookie");
 require("dotenv").config();
 
 const authenticateToken = require("./authToken");
@@ -250,7 +251,7 @@ app
         bearerToken ?? "none",
       ]);
       sendSMS(order.phoneNum, "created", false);
-      io.emit("newOrder", order);
+      emitToLocation(store_name ?? order.store_name, "newOrder", order);
       res.json(order);
     } catch (error) {
       if (error === "Invalid token") {
@@ -326,28 +327,25 @@ const getOrder = (orderId) => {
 const statuses = ["accepted", "done", "archived", "rejected"];
 
 io.on("connection", (socket) => {
-  let token = socket.handshake.query.token; // or socket.handshake.headers.authorization;
+  let cookies = socket.handshake.headers.cookie;
+  if (cookies) {
+    cookies = cookie.parse(cookies);
+    console.log('cookies', cookies)
+    const token = cookies.JWT; // Assuming the JWT token is stored under the key 'JWT'
 
-  jwt.verify(token, process.env.secret_key, (err, decoded) => {
-    if (err) {
-      console.error("Authentication error: ", err);
-      socket.disconnect();
-    } else {
-      console.log("Authenticated socket connection");
-
-      // Store socket ID and location association
-      let locationName = decoded.locationName;
-      socketLocationMapping.set(socket.id, locationName);
-
-      // Handle disconnection
-      socket.on("disconnect", () => {
-        socketLocationMapping.delete(socket.id);
-        console.log("Socket disconnected:", socket.id);
-      });
-
-      // Additional event handlers here...
-    }
-  });
+    jwt.verify(token, process.env.secret_key, (err, decoded) => {
+      if (err) {
+        console.error("Authentication error: ", err);
+        socket.disconnect();
+      } else {
+        let locationName = decoded.locationName;
+        socketLocationMapping.set(socket.id, locationName);
+      }
+    });
+  } else {
+    // Handle the case where no cookies are present
+    socket.disconnect();
+  }
 
   socket.on("disconnect", () => {
     socketLocationMapping.delete(socket.id);
