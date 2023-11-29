@@ -36,7 +36,7 @@ const orders = [
       { id: 2, name: "Juice" },
     ],
     store_name: "Copenhagen",
-    phoneNum: "+4528600501"
+    phoneNum: "+4520381866"
   },
   {
     id: uuidv4(),
@@ -44,7 +44,7 @@ const orders = [
     customer: "Donald",
     products: [{ id: 1, name: "Avocado Sandwich" }],
     store_name: "Copenhagen",
-    phoneNum: "+4530223698"
+    phoneNum: "+4520389422"
   },
 ];
 
