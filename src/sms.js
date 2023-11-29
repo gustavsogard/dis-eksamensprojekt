@@ -1,6 +1,6 @@
 // indsæt dine egne API nøgler fra twilio.com/console
-const accountSid = 'AC07288c15286750785a1fae5d9e181853';
-const authToken = '933d099398ac1b6485ef5ab2277907c2';
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
 const client = require('twilio')(accountSid, authToken);
 const { decryptNum } = require('./crypt');
 const messages = {

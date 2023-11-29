@@ -173,7 +173,7 @@ app
       order.store_name,
       encryptNum(order.phoneNum)
     ]);
-    smsCreated(order.phoneNum);
+    sendSMS(encryptNum(order.phoneNum, 'created'));
     io.emit("newOrder", order);
     res.json(order);
   });
