@@ -129,7 +129,6 @@ const authenticateToken = (req, res, next) => {
       });
     } else {
       // hvis token ikke er valid sendes personen til login siden
-      res.redirect("/login");
       return;
     }
   }
