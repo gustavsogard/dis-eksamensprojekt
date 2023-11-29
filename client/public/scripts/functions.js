@@ -1,5 +1,5 @@
 const socket = io();
-console.log(socket)
+
 
 function acceptOrder(e) {
     const order = e.parentNode.parentNode;
