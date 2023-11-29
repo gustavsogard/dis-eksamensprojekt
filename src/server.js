@@ -189,7 +189,7 @@ app
     const order = req.body;
     order.id = orders.length + 1;
     order.status = "created";
-    b.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", [
+    db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", [
       order.id,
       order.status,
       order.customer,
