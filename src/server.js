@@ -11,6 +11,7 @@ const env = require("dotenv").config();
 
 const authenticateToken = require("./authToken");
 const { encryptNum, decryptNum } = require("./crypt");
+const sendSMS = require("./sms");
 
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -35,7 +36,7 @@ const orders = [
       { id: 2, name: "Juice" },
     ],
     store_name: "Copenhagen",
-    phoneNum: "12345678"
+    phoneNum: "+4528600501"
   },
   {
     id: uuidv4(),
@@ -43,7 +44,7 @@ const orders = [
     customer: "Donald",
     products: [{ id: 1, name: "Avocado Sandwich" }],
     store_name: "Copenhagen",
-    phoneNum: "12345678"
+    phoneNum: "+4530223698"
   },
 ];
 
@@ -234,7 +235,7 @@ const getOrder = (orderId) => {
       if (err) {
         return console.error(err.message);
       }
-      resolve(row);
+      res(row);
     });
   });
 };
@@ -250,9 +251,16 @@ io.on("connection", (socket) => {
     socket.on(status, (orderId) => {
       io.emit(status, orderId);
       statusChange(orderId, status);
+      if (status !== "archived") {
+        getOrder(orderId).then((order) => {
+          sendSMS(order.phoneNum, status);
+        });
+      }
     });
   });
 });
+
+
 
 app.use("/public", express.static(path.join(__dirname, "../client/public")));
 
