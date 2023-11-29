@@ -26,6 +26,8 @@ http.listen(port, host, () => {
   console.log("Server running...");
 });
 
+const socketLocationMapping = new Map();
+
 const orders = [
   {
     id: uuidv4(),
@@ -324,13 +326,38 @@ const getOrder = (orderId) => {
 const statuses = ["accepted", "done", "archived", "rejected"];
 
 io.on("connection", (socket) => {
+  let token = socket.handshake.query.token; // or socket.handshake.headers.authorization;
+
+  jwt.verify(token, process.env.secret_key, (err, decoded) => {
+    if (err) {
+      console.error("Authentication error: ", err);
+      socket.disconnect();
+    } else {
+      console.log("Authenticated socket connection");
+
+      // Store socket ID and location association
+      let locationName = decoded.locationName;
+      socketLocationMapping.set(socket.id, locationName);
+
+      // Handle disconnection
+      socket.on("disconnect", () => {
+        socketLocationMapping.delete(socket.id);
+        console.log("Socket disconnected:", socket.id);
+      });
+
+      // Additional event handlers here...
+    }
+  });
+
   socket.on("disconnect", () => {
+    socketLocationMapping.delete(socket.id);
     console.log("user disconnected");
   });
 
   statuses.forEach((status) => {
     socket.on(status, (orderId) => {
-      io.emit(status, orderId);
+      let locationName = socketLocationMapping.get(socket.id);
+      emitToLocation(locationName, status, orderId);
       statusChange(orderId, status);
       if (status !== "archived") {
         getOrder(orderId).then((order) => {
@@ -340,6 +367,14 @@ io.on("connection", (socket) => {
     });
   });
 });
+
+function emitToLocation(locationName, event, message) {
+  socketLocationMapping.forEach((locName, socketId) => {
+    if (locName === locationName) {
+      io.to(socketId).emit(event, message);
+    }
+  });
+}
 
 app.use("/public", express.static(path.join(__dirname, "../client/public")));
 
