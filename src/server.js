@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const sqlite3 = require("sqlite3").verbose();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const env = require("dotenv").config();
+require("dotenv").config();
 
 const authenticateToken = require("./authToken");
 const { encryptNum, decryptNum } = require("./crypt");

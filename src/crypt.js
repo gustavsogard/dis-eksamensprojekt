@@ -12,7 +12,6 @@ const encryptNum = (phoneNum) => {
   encryptedData += cipher.final('hex');
   return encryptedData;
 }
-
 // create a function that decrypts an sms number
 const decryptNum = (encryptedNum) => {
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
