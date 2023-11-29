@@ -4,14 +4,14 @@ console.log(socket)
 function acceptOrder(e) {
     const order = e.parentNode.parentNode;
     order.querySelector('.buttons').remove();
-    order.innerHTML += buttons.progress;
-    socket.emit('orderAccepted', order.id);
+    order.innerHTML += buttons.accepted;
+    socket.emit('accepted', order.id);
 }
 
-socket.on('orderAccepted', orderId => {
+socket.on('accepted', orderId => {
     const order = document.getElementById(orderId);
     order.querySelector('.buttons').remove();
-    order.innerHTML += buttons.progress;
+    order.innerHTML += buttons.accepted;
     const progressColumn = document.querySelector('#progress');
     progressColumn.appendChild(order);
 })
@@ -20,10 +20,10 @@ function finishOrder(e) {
     const order = e.parentNode.parentNode;
     order.querySelector('.buttons').remove();
     order.innerHTML += buttons.done;
-    socket.emit("orderFinished", order.id);   
+    socket.emit("done", order.id);   
 }
 
-socket.on("orderFinished", orderId => {
+socket.on("done", orderId => {
     const order = document.getElementById(orderId);
     order.querySelector('.buttons').remove();
     order.innerHTML += buttons.done;
@@ -34,39 +34,32 @@ socket.on("orderFinished", orderId => {
 function reProgress(e) {
     const order = e.parentNode.parentNode;
     order.querySelector('.buttons').remove();
-    order.innerHTML += buttons.progress;
-    socket.emit('orderAccepted', order.id);
+    order.innerHTML += buttons.accepted;
+    socket.emit('accepted', order.id);
 }
-
-socket.on('orderAccepted', orderId => {
-    const order = document.getElementById(orderId);
-    order.querySelector('.buttons').remove();
-    order.innerHTML += buttons.progress;
-    const progressColumn = document.querySelector('#progress');
-    progressColumn.appendChild(order);
-})
 
 function archive(e) {
     const order = e.parentNode.parentNode;
     order.remove();
-    socket.emit('orderArchived', order.id);
+    socket.emit('archived', order.id);
 }
 
-socket.on('orderArchived', orderId => {
+socket.on('archived', orderId => {
     const order = document.getElementById(orderId);
     order.remove();
-    //Gem til database senere
+    socket.emit('archived', order.id);
 })
 
 function rejectOrder(e) {
     const order = e.parentNode.parentNode;
     order.remove();
-    socket.emit('orderRejected', order.id);
+    socket.emit('rejected', order.id);
 }
 
-socket.on('orderRejected', orderId => {
+socket.on('rejected', orderId => {
     const order = document.getElementById(orderId);
     order.remove();
+    socket.emit('rejected', order.id);
     //Gem til database senere
 });
 

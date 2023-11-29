@@ -7,7 +7,10 @@ const bcrypt = require("bcrypt");
 const sqlite3 = require("sqlite3").verbose();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const secret_key = "Joe's secret key";
+const env = require("dotenv").config();
+
+const authenticateToken = require("./authToken");
+const { encryptNum, decryptNum } = require("./crypt");
 
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -32,6 +35,7 @@ const orders = [
       { id: 2, name: "Juice" },
     ],
     store_name: "Copenhagen",
+    phoneNum: "12345678"
   },
   {
     id: uuidv4(),
@@ -39,6 +43,7 @@ const orders = [
     customer: "Donald",
     products: [{ id: 1, name: "Avocado Sandwich" }],
     store_name: "Copenhagen",
+    phoneNum: "12345678"
   },
 ];
 
@@ -58,7 +63,7 @@ db.serialize(function () {
     CREATE TABLE IF NOT EXISTS stores (id TEXT PRIMARY KEY, store_name TEXT NOT NULL UNIQUE, password TEXT NOT NULL);
   `);
   db.run(`
-    CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, status TEXT NOT NULL, customer TEXT NOT NULL, products TEXT NOT NULL, store_name TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, status TEXT NOT NULL, customer TEXT NOT NULL, products TEXT NOT NULL, store_name TEXT NOT NULL, phoneNum TEXT NOT NULL);
   `);
 
   // laver 10 salt rounds
@@ -96,12 +101,13 @@ db.serialize(function () {
         return;
       } else {
         orders.forEach(async (order) => {
-          db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", [
+          db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?)", [
             order.id,
             order.status,
             order.customer,
             JSON.stringify(order.products),
             order.store_name,
+            encryptNum(order.phoneNum)
           ]);
         });
       }
@@ -109,31 +115,7 @@ db.serialize(function () {
   })();
 });
 
-// middleware der checker om der er en token og om den er valid
-const authenticateToken = (req, res, next) => {
-  console.log("Checking for token...");
-  const token = req.cookies.JWT;
 
-  if (token) {
-    jwt.verify(token, secret_key, (err) => {
-      if (err) {
-        if (req.path !== "/login") {
-        res.redirect("/login");
-        }
-        console.log("invalid token");
-      } else {
-        // hvis der er en valid token sendes personen til dashboardet.
-        console.log("valid token, redirecting to '/'");
-      }
-    })
-  } else {
-    if (req.path !== "/login") {
-      console.log("no token, redirecting to '/login'");
-      res.redirect("/login");
-    }
-  }
-  next();
-};
 
 app
   .route("/login")
@@ -152,7 +134,7 @@ app
   .get((req, res) => {
     const token = req.cookies.JWT;
     console.log("token", token);
-    const store_name = jwt.verify(token, secret_key, (err, decoded) => {
+    const store_name = jwt.verify(token, process.env.secret_key, (err, decoded) => {
       if (err) {
         return res.status(403).json({ message: "Invalid token" });
       } else {
@@ -182,13 +164,15 @@ app
     const order = req.body;
     order.id = uuidv4();
     order.status = "created";
-    db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", [
+    db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?)", [
       order.id,
       order.status,
       order.customer,
       JSON.stringify(order.products),
       order.store_name,
+      encryptNum(order.phoneNum)
     ]);
+    smsCreated(order.phoneNum);
     io.emit("newOrder", order);
     res.json(order);
   });
@@ -213,7 +197,7 @@ app.route("/authentication").post((req, res) => {
       bcrypt.compare(password, hash, (err, result) => {
         if (result) {
           console.log("Password is correct");
-          const token = jwt.sign({ locationName }, secret_key);
+          const token = jwt.sign({ locationName }, process.env.secret_key);
           console.log(token);
           // gemmer den som cookie på serveren
           res.cookie("JWT", token, {
@@ -255,29 +239,18 @@ const getOrder = (orderId) => {
   });
 };
 
+const statuses = ["accepted", "done", "archived", "rejected"];
+
 io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
 
-  socket.on("orderAccepted", (orderId) => {
-    io.emit("orderAccepted", orderId);
-    statusChange(orderId, "progress");
-  });
-
-  socket.on("orderFinished", (orderId) => {
-    io.emit("orderFinished", orderId);
-    statusChange(orderId, "done");
-  });
-
-  socket.on("orderArchived", (orderId) => {
-    io.emit("orderArchived", orderId);
-    statusChange(orderId, "archived");
-  });
-
-  socket.on("orderRejected", (orderId) => {
-    io.emit("orderRejected", orderId);
-    statusChange(orderId, "rejected");
+  statuses.forEach((status) => {
+    socket.on(status, (orderId) => {
+      io.emit(status, orderId);
+      statusChange(orderId, status);
+    });
   });
 });
 

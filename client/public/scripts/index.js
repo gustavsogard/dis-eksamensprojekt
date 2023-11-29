@@ -5,7 +5,7 @@ const buttons = {
                 <button onClick="rejectOrder(this)">Reject</button>
                 <button onClick="acceptOrder(this)">Accept</button>
             </span>`,
-    progress: `<span class="buttons">
+    accepted: `<span class="buttons">
                 <button onClick="finishOrder(this)">Finished</button>
             </span>`,
     done: `<span class="buttons">
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (order.status === 'created') {
             createdColumn.appendChild(orderElement);
-        } else if (order.status === 'progress') {
+        } else if (order.status === 'accepted') {
             progressColumn.appendChild(orderElement);
         } else if (order.status === 'done') {
             doneColumn.appendChild(orderElement);
