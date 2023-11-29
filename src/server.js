@@ -189,7 +189,13 @@ app
     const order = req.body;
     order.id = orders.length + 1;
     order.status = "created";
-    orders.push(order);
+    b.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", [
+      order.id,
+      order.status,
+      order.customer,
+      JSON.stringify(order.products),
+      order.store_name
+    ]);
     io.emit("newOrder", order);
     res.json(order);
   });
