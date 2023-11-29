@@ -2,8 +2,8 @@ const crypto = require('crypto');
 
 // Encrypt
 const algorithm = 'aes-256-cbc';
-const key = crypto.randomBytes(32);
-const iv = crypto.randomBytes(16);
+const key = Buffer.from(process.env.cryptoKey, 'hex');
+const iv = Buffer.from(process.env.cryptoIv, 'hex');
 
 // create a function that encrypts an sms number
 const encryptNum = (phoneNum) => {
@@ -21,8 +21,3 @@ const decryptNum = (encryptedNum) => {
 }
 
 module.exports = { encryptNum, decryptNum };
-// Print
-/* console.log('Key:', key.toString('hex'));
-console.log('IV:', iv.toString('hex'));
-console.log('Encrypted:', encryptedData);
-console.log('Decrypted:', decryptedData); */

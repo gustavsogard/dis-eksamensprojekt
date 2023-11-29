@@ -10,15 +10,12 @@ const messages = {
 }
 
 const sendSMS = (phoneNum, status) => {
-    console.log(phoneNum, status);
-    console.log(decryptNum(phoneNum));
     client.messages
         .create({
             body: messages[status],
             from: '+12052364320',
             to: decryptNum(phoneNum)
         })
-        .then(message => console.log(message))
 }
 
 module.exports = sendSMS;
