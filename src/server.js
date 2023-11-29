@@ -113,37 +113,26 @@ db.serialize(function () {
 const authenticateToken = (req, res, next) => {
   console.log("Checking for token...");
   const token = req.cookies.JWT;
-  // Check om der er en token, og om requested path er login siden
-  if (req.path === "/login") {
-    if (token) {
-      console.log("User has token");
-      jwt.verify(token, secret_key, (err) => {
-        if (err) {
-          next();
-          // hvis token ikke er valid sendes personen til login siden
-          console.log("invalid token");
-        } else {
-          // hvis der er en valid token sendes personen til dashboardet.
-          console.log("valid token, redirecting to '/'");
-          res.redirect("/");
+
+  if (token) {
+    jwt.verify(token, secret_key, (err) => {
+      if (err) {
+        if (req.path !== "/login") {
+        res.redirect("/login");
         }
-      });
-    } else {
-      // hvis token ikke er valid sendes personen til login siden
-      return;
+        console.log("invalid token");
+      } else {
+        // hvis der er en valid token sendes personen til dashboardet.
+        console.log("valid token, redirecting to '/'");
+      }
+    })
+  } else {
+    if (req.path !== "/login") {
+      console.log("no token, redirecting to '/login'");
+      res.redirect("/login");
     }
   }
-  // hvis ingen token findes skrives fejl
-  if (!token) {
-    return res.status(401).json({ message: "Token not provided" });
-  }
-  // Check om token er valid
-  jwt.verify(token, secret_key, (err) => {
-    if (err) {
-      return res.status(403).json({ message: "Invalid token" });
-    }
-    next();
-  });
+  next();
 };
 
 app
