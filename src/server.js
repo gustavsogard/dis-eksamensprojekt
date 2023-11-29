@@ -24,21 +24,21 @@ http.listen(port, host, () => {
 
 const orders = [
   {
-    id: 1,
+    id: uuidv4(),
     status: "created",
     customer: "Donald",
     products: [
       { id: 1, name: "Avocado Sandwich" },
       { id: 2, name: "Juice" },
     ],
-    store_name: "Copenhagen"
+    store_name: "Copenhagen",
   },
   {
-    id: 2,
+    id: uuidv4(),
     status: "created",
     customer: "Donald",
     products: [{ id: 1, name: "Avocado Sandwich" }],
-    store_name: "Copenhagen"
+    store_name: "Copenhagen",
   },
 ];
 
@@ -101,7 +101,7 @@ db.serialize(function () {
             order.status,
             order.customer,
             JSON.stringify(order.products),
-            order.store_name
+            order.store_name,
           ]);
         });
       }
@@ -119,8 +119,8 @@ const authenticateToken = (req, res, next) => {
       console.log("User has token");
       jwt.verify(token, secret_key, (err) => {
         if (err) {
-            // hvis token ikke er valid sendes personen til login siden
-            res.redirect("/login");
+          // hvis token ikke er valid sendes personen til login siden
+          res.redirect("/login");
         } else {
           // hvis der er en valid token sendes personen til dashboardet.
           console.log("valid token, redirecting to '/'");
@@ -162,39 +162,43 @@ app
   .route("/orders")
   .get((req, res) => {
     const token = req.cookies.JWT;
-    console.log('token', token);
+    console.log("token", token);
     const store_name = jwt.verify(token, secret_key, (err, decoded) => {
       if (err) {
         return res.status(403).json({ message: "Invalid token" });
       } else {
         return decoded.locationName;
       }
-    })
+    });
     console.log(store_name);
 
-    db.all("SELECT * FROM orders WHERE store_name = ?", [store_name], (err, rows) => {
-      rows = rows.map(row => {
-        return {
-          ...row,
-          products: JSON.parse(row.products)
+    db.all(
+      "SELECT * FROM orders WHERE store_name = ?",
+      [store_name],
+      (err, rows) => {
+        rows = rows.map((row) => {
+          return {
+            ...row,
+            products: JSON.parse(row.products),
+          };
+        });
+        if (err) {
+          return console.error(err.message);
         }
-      })
-      if (err) {
-        return console.error(err.message);
+        res.json(rows);
       }
-      res.json(rows);
-    });
+    );
   })
   .post((req, res) => {
     const order = req.body;
-    order.id = orders.length + 1;
+    order.id = uuidv4();
     order.status = "created";
     db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", [
       order.id,
       order.status,
       order.customer,
       JSON.stringify(order.products),
-      order.store_name
+      order.store_name,
     ]);
     io.emit("newOrder", order);
     res.json(order);
@@ -240,16 +244,25 @@ app.route("/authentication").post((req, res) => {
 });
 
 const statusChange = (orderId, status) => {
-  db.serialize(() => {
-    db.run(
-      `UPDATE orders SET status = '${status}' WHERE id = ?`,
-      [orderId],
-      (err) => {
-        if (err) {
-          console.error(err.message);
-        }
+  db.run(
+    `UPDATE orders SET status = '${status}' WHERE id = ?`,
+    [orderId],
+    (err) => {
+      if (err) {
+        console.error(err.message);
       }
-    );
+    }
+  );
+};
+
+const getOrder = (orderId) => {
+  return new Promise((res, rej) => {
+    db.get(`SELECT * FROM orders WHERE id = ?`, [orderId], (err, row) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      resolve(row);
+    });
   });
 };
 
@@ -261,25 +274,21 @@ io.on("connection", (socket) => {
   socket.on("orderAccepted", (orderId) => {
     io.emit("orderAccepted", orderId);
     statusChange(orderId, "progress");
-    orders.find((order) => order.id == orderId).status = "progress";
   });
 
   socket.on("orderFinished", (orderId) => {
     io.emit("orderFinished", orderId);
     statusChange(orderId, "done");
-    orders.find((order) => order.id == orderId).status = "done";
   });
 
   socket.on("orderArchived", (orderId) => {
     io.emit("orderArchived", orderId);
     statusChange(orderId, "archived");
-    orders.find((order) => order.id == orderId).status = "archived";
   });
 
   socket.on("orderRejected", (orderId) => {
     io.emit("orderRejected", orderId);
     statusChange(orderId, "rejected");
-    orders.find((order) => order.id == orderId).status = "rejected";
   });
 });
 
