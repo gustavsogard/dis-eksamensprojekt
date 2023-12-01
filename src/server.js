@@ -331,7 +331,7 @@ io.on("connection", (socket) => {
   if (cookies) {
     cookies = cookie.parse(cookies);
     console.log('cookies', cookies)
-    const token = cookies.JWT; // Assuming the JWT token is stored under the key 'JWT'
+    const token = cookies.JWT; 
 
     jwt.verify(token, process.env.secret_key, (err, decoded) => {
       if (err) {
