@@ -34,21 +34,24 @@
         </div>
         
         <div class="modal" id="modal-one">
-            <div class="modal-bg modal-exit"></div>
+            <div class="modal-bg modal-exit" id="filler">
+                <p>filler</p>
+            </div>
             <div class="modal-container" id="addOrdersContainer">
-                <h2>Create Order</h2>
+                <h1>Create Order</h1>
 
                 <form action="#" method="post">
                     <!-- Customer Name -->
                     <label for="customerName">Customer Name:</label>
-                    <input type="text" id="customerName" name="customerName">
+                    <input type="text" id="customerName" name="customerName" placeholder="David Smith" required>
 
                     <!-- Phone Number -->
                     <label for="phoneNumber">Phone Number:</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-7]{8}" placeholder="Enter 10-digit phone number">
+                    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-7]{8}" placeholder="+4558838182" required>
                     
+                    <div id="productsContainer">
                     <!-- Product Selection -->
-                    <label>Products:</label>
+                    <h2>Products:</h2>
 
                     <!-- Dummy products for Category 1 -->
                     <div id="juicesCategoryContainer">
@@ -82,19 +85,27 @@
                         <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Cookie">Cookie</button>
                         <button class="addToOrdersButton" onclick="addToOrdersList(this)" type="button" value="Ginger Shot">Ginger Shot</button>
                     </div>
+                </div>
 
                     
                 </form>
-                <button class="modal-close modal-exit">X</button>
+                
             </div>
             <div id="currentOrder">
                 <h1>Current Order</h1>
                 <div id="currentOrderList">
+                    <!-- <div class="ordersInOrdersList">
+                        <p>Energizer</p>
+                        <button class="removeButton">X</button>
+                    </div> -->
+
                    
                 </div>
                 <!-- Submit Button -->
                 <input id="submitOrder" type="submit" value="Place Order" onclick="submitOrder()">
+                <p id="ordersPlaced"></p>
             </div>
+            <button class="modal-close modal-exit" id="closeModal">Close</button>
         </div>
     </div>
     

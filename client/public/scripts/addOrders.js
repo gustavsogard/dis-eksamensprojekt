@@ -31,6 +31,20 @@ function submitOrder() {
         order.push({ id: index + 1, name: item.innerText });
     });
 
+    if (order.length === 0) {
+        alert("You must add at least one item to the order!");
+        return;
+    }
+    if (customerName === "") {
+        alert("You must add a customer name!");
+        return;
+    }
+    if (customerPhone === "") {
+        alert("You must add a customer phone number!");
+        return;
+    }
+
+
     const orderToSend = {
         customer: customerName,
         products: order,
@@ -51,7 +65,7 @@ function submitOrder() {
             orderList.innerHTML = "";
             document.getElementById("customerName").value = "";
             document.getElementById("phoneNumber").value = "";
-            
+            document.getElementById("ordersPlaced").value = "Orders are now placed!";
         });
 }
 

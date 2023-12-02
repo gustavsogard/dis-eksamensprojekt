@@ -19,6 +19,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    background-attachment: scroll;
 }
 
 .modal {
@@ -74,6 +75,16 @@ body {
     }
 }
 
+#modal-one {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#filler {
+    display: none;
+    width: 25%;
+}
+
 #addOrdersContainer {
     font-family: 'Helvetica Neue', sans-serif;
     background-color: #fff;
@@ -83,7 +94,7 @@ body {
     margin: 0 auto;
     position: relative;
     width: 50%;
-    height: 80vh;
+    height: 75vh;
 }
 
 #addOrdersContainer h2 {
@@ -137,6 +148,65 @@ input[type="submit"]:hover {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-    position: relative;
-    width: 30%;
+    width: 25%;
+    height: 75vh;
 }
+
+#currentOrderList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ordersInOrdersList {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.addToOrdersButton {
+    display: inline-block; /* Make it inline with other elements */
+    padding: 10px 20px; /* Adjust padding as needed */
+    background-color: #3498db; /* Button background color */
+    color: #fff; /* Button text color */
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#closeModal {
+    padding: 20px;
+    background-color: #ff5f57;
+    font-weight: bold;
+    font-size: 18px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position: fixed;
+    margin-right: 45%;
+}
+
+.removeButton {
+    background-color: #e74c3c; /* Red background color */
+    color: #fff; /* White text color */
+    padding: 8px 12px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+  }
+
+  .removeButton:hover {
+    background-color: #c0392b; /* Darker red on hover */
+  }
+
+  #ordersPlaced {
+    color: green;
+  }
