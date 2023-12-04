@@ -210,3 +210,12 @@ input[type="submit"]:hover {
   #ordersPlaced {
     color: green;
   }
+
+  #phoneCode{
+    width: 10%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    margin-bottom: 10px;
+
+  }

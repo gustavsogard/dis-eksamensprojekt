@@ -16,9 +16,7 @@ function addToOrdersList(e) {
 
         const currentOrderList = document.getElementById("currentOrderList");
         currentOrderList.appendChild(orderElement);
-    }
-
-    
+    }   
 }
 
 function insertCorrectQuantity(e) {
@@ -45,6 +43,7 @@ function insertCorrectQuantity(e) {
 function submitOrder() {
     const customerName = document.getElementById("customerName").value;
     const customerPhone = document.getElementById("phoneNumber").value;
+    const customerPhoneCode = document.getElementById("phoneCode").value;
  
     const orderList = document.getElementById("currentOrderList");
     const orderListItems = orderList.querySelectorAll("p");
@@ -68,7 +67,7 @@ function submitOrder() {
         return;
     }
 
-    if (customerPhone.length != 11 || customerPhone.substring(0, 3) != "+45") {
+    if (customerPhone.length != 8 || document.getElementById("phoneCode").value === "") {
         alert("You must add a valid phone number!");
         return;
     }
@@ -77,6 +76,7 @@ function submitOrder() {
         customer: customerName,
         products: order,
         phoneNum: customerPhone,
+        phoneCode: customerPhoneCode,
     };
 
     console.log(orderToSend);
@@ -97,7 +97,7 @@ function submitOrder() {
         });
 }
 
-
+//Opens and closes the modal
 document.addEventListener('DOMContentLoaded', () => {
     const modals = document.querySelectorAll('[data-modal]');
 
@@ -115,7 +115,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     });
-
-
-
 });

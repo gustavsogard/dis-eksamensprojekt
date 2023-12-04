@@ -47,8 +47,16 @@
 
                     <!-- Phone Number -->
                     <label for="phoneNumber">Phone Number:</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="\+45[0-9]{8}" placeholder="+4500000000" required>
-
+                    <div id="phoneContainer">
+                    <body>
+                        <select id="phoneCode" name="phoneCode">
+                            <option value="+45" selected>+45</option>
+                            <option value="+1">+1</option>
+                            <option value="+44">+44</option>
+                        </select>
+                    </body>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-9]{8}" placeholder="00000000" required>
+                    </div>
                     
                     <div id="productsContainer">
                     <!-- Product Selection -->
