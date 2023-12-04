@@ -75,8 +75,7 @@ function submitOrder() {
     const orderToSend = {
         customer: customerName,
         products: order,
-        phoneNum: customerPhone,
-        phoneCode: customerPhoneCode,
+        phoneNum: customerPhoneCode+customerPhone,
     };
 
     console.log(orderToSend);
