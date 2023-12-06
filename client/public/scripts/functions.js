@@ -1,6 +1,5 @@
 const socket = io();
 
-
 function acceptOrder(e) {
     const order = e.parentNode.parentNode;
     order.querySelector('.buttons').remove();

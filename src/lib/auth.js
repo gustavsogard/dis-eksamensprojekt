@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 // middleware der checker om der er en token og om den er valid
 const authenticateToken = (req, res, next) => {

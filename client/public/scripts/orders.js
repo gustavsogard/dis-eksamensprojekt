@@ -79,7 +79,7 @@ function submitOrder() {
     };
 
     console.log(orderToSend);
-    fetch("/orders", {
+    fetch("/api/orders", {
         method: "POST",
         body: JSON.stringify(orderToSend),
         headers: {
