@@ -13,7 +13,6 @@ const ioCallbackFunction = (io) => (socket) => {
     let cookies = socket.handshake.headers.cookie;
     if (cookies) {
         cookies = cookie.parse(cookies);
-        console.log('cookies', cookies)
         const token = cookies.JWT;
 
         jwt.verify(token, process.env.secret_key, (err, decoded) => {
@@ -32,7 +31,6 @@ const ioCallbackFunction = (io) => (socket) => {
 
     socket.on("disconnect", () => {
         socketLocationMapping.delete(socket.id);
-        console.log("user disconnected");
     });
 
     statuses.forEach((status) => {
@@ -42,7 +40,7 @@ const ioCallbackFunction = (io) => (socket) => {
             statusChange(orderId, status);
             if (status !== "archived") {
                 getOrder(orderId).then((order) => {
-                    sendSMS(order.phoneNum, status);
+                    sendSMS(order.customer_phone, status);
                 });
             }
         });

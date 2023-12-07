@@ -32,9 +32,7 @@ router.route("/authentication").post((req, res) => {
   
         bcrypt.compare(password, hash, (err, result) => {
           if (result) {
-            console.log("Password is correct");
             const token = jwt.sign({ locationName }, process.env.secret_key);
-            console.log(token);
             // gemmer den som cookie på serveren
             res.cookie("JWT", token, {
               httpOnly: true,

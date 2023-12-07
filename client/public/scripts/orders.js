@@ -44,15 +44,17 @@ function submitOrder() {
     const customerName = document.getElementById("customerName").value;
     const customerPhone = document.getElementById("phoneNumber").value;
     const customerPhoneCode = document.getElementById("phoneCode").value;
- 
+
     const orderList = document.getElementById("currentOrderList");
     const orderListItems = orderList.querySelectorAll("p");
     const order = [];
 
     index = 0;
     orderListItems.forEach((item, index) => {
-        order.push({ id: index + 1, name: item.innerText });
+        const itemName = item.innerText.split(" x")[0];
+        order.push({ id: index + 1, name: itemName });
     });
+
 
     if (order.length === 0) {
         alert("You must add at least one item to the order!");
@@ -72,20 +74,42 @@ function submitOrder() {
         return;
     }
 
-    const orderToSend = {
-        customer: customerName,
-        products: order,
-        phoneNum: customerPhoneCode+customerPhone,
-    };
-
-    console.log(orderToSend);
-    fetch("/api/orders", {
-        method: "POST",
-        body: JSON.stringify(orderToSend),
-        headers: {
-            "Content-Type": "application/json",
-        },
+    // Fetch products from the database
+    fetch("/api/products", {
+        method: "GET",
+        credentials: "include",
     })
+        .then((response) => response.json())
+        .then((products) => {
+            // Map product names to product IDs
+            const productMap = {};
+            products.forEach((product) => {
+                productMap[product.product_name] = product.id;
+            });
+
+            // Map order items to product IDs
+            const orderToSend = {
+                customer_name: customerName,
+                products: order.map((item) => {
+                    return {
+                        product_id: productMap[item.name],
+                        product_name: item.name,
+                        quantity: 1, // You may adjust the quantity as needed
+                    };
+                }),
+                customer_phone: customerPhoneCode + customerPhone,
+            };
+            console.log(orderToSend);
+
+            // Submit the order
+            return fetch("/api/orders", {
+                method: "POST",
+                body: JSON.stringify(orderToSend),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        })
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
@@ -93,8 +117,13 @@ function submitOrder() {
             document.getElementById("customerName").value = "";
             document.getElementById("phoneNumber").value = "";
             document.getElementById("ordersPlaced").innerText = "Orders are now placed!";
+        })
+        .catch((error) => {
+            console.error(error);
+            // Handle errors
         });
 }
+
 
 //Opens and closes the modal
 document.addEventListener('DOMContentLoaded', () => {

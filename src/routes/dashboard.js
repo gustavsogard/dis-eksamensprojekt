@@ -14,7 +14,6 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
 router.route("/").get(authenticateToken, (req, res) => {
-    console.log("token is valid, serving dashboard");
     // dette gør at der bliver tjekket for token, hvis der er en korrekt token bliver orders vist
     res.sendFile(path.join(__dirname, "../../client/index.html"));
   });

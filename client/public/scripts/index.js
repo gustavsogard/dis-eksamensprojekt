@@ -1,5 +1,3 @@
-
-
 const buttons = {
     created: `<span class="buttons">
                 <button onClick="rejectOrder(this)">Reject</button>
@@ -29,11 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     orders.forEach(order => {
         const orderElement = document.createElement('div');
         orderElement.classList.add('order');
-        orderElement.id = order.id;
+        orderElement.id = order.order_id;
         orderElement.innerHTML = `
-            <p>${order.customer}</p>
+            <p>${order.customer_name}</p>
             <ul>
-                ${order.products.map(product => `<li>${product.name}</li>`).join('')}
+                ${order.products.map(product => `<li>${product.product_name} x${product.quantity}</li>`).join('')}
             </ul>
             ${buttons[order.status]}
         `;

@@ -7,9 +7,9 @@ const key = Buffer.from(process.env.cryptoKey, 'hex');
 const iv = Buffer.from(process.env.cryptoIv, 'hex');
 
 // create a function that encrypts an sms number
-const encryptNum = (phoneNum) => {
+const encryptNum = (customer_phone) => {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
-  let encryptedData = cipher.update(phoneNum, 'utf-8', 'hex');
+  let encryptedData = cipher.update(customer_phone, 'utf-8', 'hex');
   encryptedData += cipher.final('hex');
   return encryptedData;
 }

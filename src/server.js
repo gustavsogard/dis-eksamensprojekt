@@ -22,7 +22,7 @@ const authRoutes = require("./routes/authentication");
 app.use("/", dashboardRoutes);
 app.use("/", loginRoutes);
 app.use("/", authRoutes);
-app.use("/api", apiRoutes);
+app.use("/api", apiRoutes(io));
 
 app.use("/public", express.static(path.join(__dirname, "../client/public")));
 

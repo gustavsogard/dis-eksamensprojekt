@@ -20,8 +20,6 @@ async function authenticate() {
     const password = document.getElementById('password-input').value;
     const element = document.getElementById('location-select');
     const locationName = element.value;
-    console.log(locationName);
-    console.log(password);
     return fetch('/authentication', {
         method: 'POST',
         body: JSON.stringify({ password, locationName}),

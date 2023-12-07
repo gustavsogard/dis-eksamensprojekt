@@ -2,8 +2,8 @@ const { db } = require("./init");
 
 const statusChange = (orderId, status) => {
     db.run(
-      `UPDATE orders SET status = '${status}' WHERE id = ?`,
-      [orderId],
+      `UPDATE orders SET status = ? WHERE id = ?`,
+      [status, orderId],
       (err) => {
         if (err) {
           console.error(err.message);

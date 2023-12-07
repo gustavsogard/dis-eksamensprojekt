@@ -14,12 +14,12 @@ const messages = {
     rejected: 'Hey det er JOE. Din ordre er blevet afvist, kontakt os venligst for mere information.',
 }
 
-const sendSMS = (phoneNum, status, encryptFlag = true) => {
+const sendSMS = (customer_phone, status, encryptFlag = true) => {
     client.messages
         .create({
             body: messages[status],
             from: '+12052364320',
-            to: encryptFlag ? decryptNum(phoneNum) : phoneNum
+            to: encryptFlag ? decryptNum(customer_phone) : customer_phone
         })
 }
 
