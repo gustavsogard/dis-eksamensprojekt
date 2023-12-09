@@ -188,6 +188,18 @@ const apiRoutes = (io) => {
                 res.json(rows);
             });
     });
+
+    router.route("/loadtest").get((req, res) => {
+        function calculateSumOfNumbers(n) {
+            let sum = 0;
+            for (let i = 0; i < n; i++) {
+                sum += i;
+            }
+            return sum;
+        }
+        return res.json({ sum: calculateSumOfNumbers(10000000) });
+    });
+
     return router;
 }
 
