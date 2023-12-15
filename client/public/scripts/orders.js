@@ -52,9 +52,9 @@ function submitOrder() {
     index = 0;
     orderListItems.forEach((item, index) => {
         const itemName = item.innerText.split(" x")[0];
-        order.push({ id: index + 1, name: itemName });
+        const itemQuantity = item.innerText.split(" x")[1];
+        order.push({ id: index + 1, name: itemName, quantity: itemQuantity });
     });
-
 
     if (order.length === 0) {
         alert("You must add at least one item to the order!");
@@ -94,12 +94,11 @@ function submitOrder() {
                     return {
                         product_id: productMap[item.name],
                         product_name: item.name,
-                        quantity: 1, // You may adjust the quantity as needed
+                        quantity: item.quantity,
                     };
                 }),
                 customer_phone: customerPhoneCode + customerPhone,
             };
-            console.log(orderToSend);
 
             // Submit the order
             return fetch("/api/orders", {
@@ -112,7 +111,7 @@ function submitOrder() {
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
+            console.log("data:", data);
             orderList.innerHTML = "";
             document.getElementById("customerName").value = "";
             document.getElementById("phoneNumber").value = "";
