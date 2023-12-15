@@ -175,7 +175,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "description": "Produktets unikke ID"
         },
         "product_name": {
@@ -188,7 +188,7 @@
       "type": "object",
       "properties": {
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "description": "Produktets unikke ID"
         },
         "quantity": {
@@ -201,7 +201,7 @@
       "type": "object",
       "properties": {
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "description": "Produktets unikke ID"
         },
         "product_name": {
@@ -218,7 +218,7 @@
       "type": "object",
       "properties": {
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "description": "Ordrens unikke ID"
         },
         "status": {
