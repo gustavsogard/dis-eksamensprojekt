@@ -66,7 +66,7 @@
         ]
       }
     },
-    "partner-orders": {
+    "/partner-orders": {
       "get": {
         "tags": ["orders"],
         "summary": "Hent alle ordrer",
