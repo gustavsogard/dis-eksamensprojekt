@@ -138,7 +138,13 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                  "store_name": {
+                    "type": "string",
+                    "description": "Butikkens navn"
+                  }
+                }
               }
             }
           },
