@@ -17,7 +17,7 @@ const orders = [
     {
       id: uuidv4(),
       status: "created",
-      customer_name: "Donald",
+      customer_name: "Jack",
       customer_phone: "+4520381866",
       store_name: "Copenhagen",
       external_api_key: "none",
@@ -25,7 +25,7 @@ const orders = [
     {
       id: uuidv4(),
       status: "created",
-      customer_name: "Trump",
+      customer_name: "Emily",
       customer_phone: "+4520389422",
       store_name: "Copenhagen",
       external_api_key: "none",

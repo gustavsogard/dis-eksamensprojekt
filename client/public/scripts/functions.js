@@ -67,7 +67,7 @@ socket.on("newOrder", order => {
     orderElement.classList.add("order");
     orderElement.id = order.order_id;
     orderElement.innerHTML = `
-        <p>${order.customer_name}</p>
+        <p class="nameOnOrder">${order.customer_name}</p>
         <ul>
             ${order.products.map(product => `<li>${product.product_name} x${product.quantity}</li>`).join('')}
         </ul>

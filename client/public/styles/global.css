@@ -84,3 +84,25 @@ p {
   margin-top: 10px;
   transition: background-color 0.3s;
 }
+.nameOnOrder {
+  font-weight: bold;
+  font-size: 100%;
+  margin: 10px;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.nameOnOrder::after {
+  content: ":";
+}
+
+#board button:hover {
+  background-color: #f7c1d9;
+}
+
+.trelloTitle {
+  font-size: 150%;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 20px; /* Added margin-bottom for better spacing */
+}
