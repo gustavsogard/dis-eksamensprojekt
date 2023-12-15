@@ -12,6 +12,7 @@
     "loadtest": "^8.0.5",
     "socket.io": "^4.7.2",
     "sqlite3": "^5.1.6",
+    "swagger-ui-express": "^5.0.0",
     "twilio": "^4.19.0",
     "uuid": "^9.0.1"
   }

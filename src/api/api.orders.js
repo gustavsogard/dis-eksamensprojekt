@@ -176,57 +176,6 @@ const apiRoutes = (io) => {
             }
         });
 
-    router.route("/products")
-        .get(async (req, res) => {
-            try {
-                const jwtToken = req.cookies.JWT;
-                const bearerToken = req.headers["authorization"]?.split(" ")[1];
-                let store_name = undefined;
-    
-                if (!jwtToken && !bearerToken) {
-                    return res.status(401).json({ message: "No jwt or bearer token" });
-                }
-    
-                if (jwtToken) {
-                    const decoded = await new Promise((resolve, reject) => {
-                        jwt.verify(jwtToken, process.env.secret_key, (err, decoded) => {
-                            if (err) reject("Invalid token");
-                            resolve(decoded);
-                        });
-                    });
-                    store_name = decoded.locationName;
-                }
-    
-                if (bearerToken) {
-                    const row = await new Promise((resolve, reject) => {
-                        db.get(
-                            `SELECT * FROM api_keys WHERE api_key = ?`,
-                            [bearerToken],
-                            (err, row) => {
-                                if (err) reject("Server error");
-                                if (!row) reject("Invalid token");
-                                resolve(row);
-                            }
-                        );
-                    });
-                }
-
-                db.all("SELECT * FROM products", [], (err, rows) => {
-                    if (err) {
-                        return console.error(err.message);
-                    }
-                    res.json(rows);
-                });
-            } catch (error) {
-                console.error(error);
-                if (error === "Invalid token") {
-                    return res.status(401).json({ message: error });
-                } else {
-                    return res.status(500).json({ message: "An error occurred" });
-                }
-            }
-        });
-
     router.route("/partner-orders")
         .get(async (req, res) => {
             const bearerToken = req.headers["authorization"]?.split(" ")[1];
@@ -294,6 +243,94 @@ const apiRoutes = (io) => {
                         res.json(ordersWithProducts);
                     }
                 );
+            } catch (error) {
+                console.error(error);
+                if (error === "Invalid token") {
+                    return res.status(401).json({ message: error });
+                } else {
+                    return res.status(500).json({ message: "An error occurred" });
+                }
+            }
+        });
+    
+    router.route("/products")
+        .get(async (req, res) => {
+            try {
+                const jwtToken = req.cookies.JWT;
+                const bearerToken = req.headers["authorization"]?.split(" ")[1];
+                let store_name = undefined;
+    
+                if (!jwtToken && !bearerToken) {
+                    return res.status(401).json({ message: "No jwt or bearer token" });
+                }
+    
+                if (jwtToken) {
+                    const decoded = await new Promise((resolve, reject) => {
+                        jwt.verify(jwtToken, process.env.secret_key, (err, decoded) => {
+                            if (err) reject("Invalid token");
+                            resolve(decoded);
+                        });
+                    });
+                    store_name = decoded.locationName;
+                }
+    
+                if (bearerToken) {
+                    const row = await new Promise((resolve, reject) => {
+                        db.get(
+                            `SELECT * FROM api_keys WHERE api_key = ?`,
+                            [bearerToken],
+                            (err, row) => {
+                                if (err) reject("Server error");
+                                if (!row) reject("Invalid token");
+                                resolve(row);
+                            }
+                        );
+                    });
+                }
+
+                db.all("SELECT * FROM products", [], (err, rows) => {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    res.json(rows);
+                });
+            } catch (error) {
+                console.error(error);
+                if (error === "Invalid token") {
+                    return res.status(401).json({ message: error });
+                } else {
+                    return res.status(500).json({ message: "An error occurred" });
+                }
+            }
+        });
+    
+    // Create an endpoint for /stores that returns a list of stores just like the way /products returns a list of products only if you have a valid bearer token:
+    router.route("/stores")
+        .get(async (req, res) => {
+            const bearerToken = req.headers["authorization"]?.split(" ")[1];
+            if (!bearerToken) {
+                return res.status(401).json({ message: "No bearer token" });
+            }
+
+            try {
+                const row = await new Promise((resolve, reject) => {
+                    db.get(
+                        `SELECT * FROM api_keys WHERE api_key = ?`,
+                        [bearerToken],
+                        (err, row) => {
+                            if (err) reject("Server error");
+                            if (!row) reject("Invalid token");
+                            resolve(row);
+                        }
+                    );
+                });
+
+                db.all("SELECT store_name FROM stores", [], (err, rows) => {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    res.json(rows);
+                });
             } catch (error) {
                 console.error(error);
                 if (error === "Invalid token") {

@@ -1,0 +1,272 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Dette er dokumentationen for JUICES.LIVE API, designet til eksterne partnere. Her finder du information om forskellige endpoints, der muliggør oprettelse og hentning af ordrer, produkter og butikker. API'et bruger HTTPS-protokollen og kræver autorisation via Bearer Token. Se dokumentationen for detaljer om hvert endpoint, parametre og svar.",
+    "version": "1.0.0",
+    "title": "JUICES.LIVE API",
+    "contact": { "email": "guso22ab@student.cbs.dk" },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "juices.live",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "orders",
+      "description": "Endpoints for at hente eller oprette ordrer"
+    },
+    {
+      "name": "products",
+      "description": "Endpoints for at hente produkter"
+    },
+    {
+      "name": "stores",
+      "description": "Endpoints for at hente butikker"
+    }
+  ],
+  "schemes": ["https"],
+  "paths": {
+    "/orders": {
+      "post": {
+        "tags": ["orders"],
+        "summary": "Opret en ny ordre",
+        "description": "Opretter en ny ordre hos JUICES.LIVE",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Ordren der skal oprettes",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewOrder"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ordren er oprettet",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          },
+          "401": {
+            "description": "Du har ikke adgang til denne ressource"
+          },
+          "500": {
+            "description": "Der skete en fejl på serveren"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "partner-orders": {
+      "get": {
+        "tags": ["orders"],
+        "summary": "Hent alle ordrer",
+        "description": "Henter alle ordrer fra JUICES.LIVE",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "En liste af ordrer",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Order"
+              }
+            }
+          },
+          "401": {
+            "description": "Du har ikke adgang til denne ressource"
+          },
+          "500": {
+            "description": "Der skete en fejl på serveren"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Hent alle produkter",
+        "description": "Henter alle produkter fra JUICES.LIVE",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "En liste af produkter",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          },
+          "401": {
+            "description": "Du har ikke adgang til denne ressource"
+          },
+          "500": {
+            "description": "Der skete en fejl på serveren"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/stores": {
+      "get": {
+        "tags": ["stores"],
+        "summary": "Hent alle butikker",
+        "description": "Henter alle butikker fra JUICES.LIVE",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "En liste af butikker",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "401": {
+            "description": "Du har ikke adgang til denne ressource"
+          },
+          "500": {
+            "description": "Der skete en fejl på serveren"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "Product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Produktets unikke ID"
+        },
+        "product_name": {
+          "type": "string",
+          "description": "Produktets navn"
+        }
+      }
+    },
+    "ShallowProduct": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "integer",
+          "description": "Produktets unikke ID"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Produktets antal"
+        }
+      }
+    },
+    "OrderProduct": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "integer",
+          "description": "Produktets unikke ID"
+        },
+        "product_name": {
+          "type": "string",
+          "description": "Produktets navn"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Produktets antal"
+        }
+      }
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "description": "Ordrens unikke ID"
+        },
+        "status": {
+          "type": "string",
+          "description": "Ordrens status"
+        },
+        "customer_name": {
+          "type": "string",
+          "description": "Kundens navn"
+        },
+        "customer_phone": {
+          "type": "string",
+          "description": "Kundens telefonnummer"
+        },
+        "store_name": {
+          "type": "string",
+          "description": "Navnet på den lokation der skal lave ordren"
+        },
+        "external_api_key": {
+          "type": "string",
+          "description": "Den eksterne API nøgle (bearer token) der er brugt til at lave ordren"
+        },
+        "products": {
+          "type": "array",
+          "description": "Produkterne i ordren",
+          "items": {
+            "$ref": "#/definitions/OrderProduct"
+          }
+        }
+      }
+    },
+    "NewOrder": {
+      "type": "object",
+      "properties": {
+        "customer_name": {
+          "type": "string",
+          "description": "Kundens navn"
+        },
+        "customer_phone": {
+          "type": "string",
+          "description": "Kundens telefonnummer"
+        },
+        "store_name": {
+          "type": "string",
+          "description": "Navnet på den lokation der skal lave ordren"
+        },
+        "products": {
+          "type": "array",
+          "description": "Produkterne i ordren",
+          "items": {
+            "$ref": "#/definitions/ShallowProduct"
+          }
+        }
+      }
+    }
+  }
+}
