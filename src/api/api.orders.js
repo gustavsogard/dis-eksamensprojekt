@@ -169,7 +169,7 @@ const apiRoutes = (io) => {
             } catch (error) {
                 console.error(error);
                 if (error === "Invalid token") {
-                    return res.status(403).json({ message: error });
+                    return res.status(401).json({ message: error });
                 } else {
                     return res.status(500).json({ message: "An error occurred" });
                 }
@@ -178,23 +178,38 @@ const apiRoutes = (io) => {
 
     router.route("/products")
         .get(async (req, res) => {
-            const bearerToken = req.headers["authorization"]?.split(" ")[1];
-            if (!bearerToken) {
-                return res.status(401).json({ message: "No bearer token" });
-            }
-
             try {
-                const row = await new Promise((resolve, reject) => {
-                    db.get(
-                        `SELECT * FROM api_keys WHERE api_key = ?`,
-                        [bearerToken],
-                        (err, row) => {
-                            if (err) reject("Server error");
-                            if (!row) reject("Invalid token");
-                            resolve(row);
-                        }
-                    );
-                });
+                const jwtToken = req.cookies.JWT;
+                const bearerToken = req.headers["authorization"]?.split(" ")[1];
+                let store_name = undefined;
+    
+                if (!jwtToken && !bearerToken) {
+                    return res.status(401).json({ message: "No jwt or bearer token" });
+                }
+    
+                if (jwtToken) {
+                    const decoded = await new Promise((resolve, reject) => {
+                        jwt.verify(jwtToken, process.env.secret_key, (err, decoded) => {
+                            if (err) reject("Invalid token");
+                            resolve(decoded);
+                        });
+                    });
+                    store_name = decoded.locationName;
+                }
+    
+                if (bearerToken) {
+                    const row = await new Promise((resolve, reject) => {
+                        db.get(
+                            `SELECT * FROM api_keys WHERE api_key = ?`,
+                            [bearerToken],
+                            (err, row) => {
+                                if (err) reject("Server error");
+                                if (!row) reject("Invalid token");
+                                resolve(row);
+                            }
+                        );
+                    });
+                }
 
                 db.all("SELECT * FROM products", [], (err, rows) => {
                     if (err) {
