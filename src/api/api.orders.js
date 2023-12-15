@@ -31,7 +31,7 @@ const apiRoutes = (io) => {
             );
 
             db.all(
-                "SELECT *" +
+                "SELECT * " +
                 "FROM orders " +
                 "JOIN order_products ON orders.id = order_products.order_id " +
                 "JOIN products ON order_products.product_id = products.id " +
@@ -79,7 +79,6 @@ const apiRoutes = (io) => {
             );
         })
 
-
         .post(async (req, res) => {
             try {
                 const jwtToken = req.cookies.JWT;
@@ -119,7 +118,6 @@ const apiRoutes = (io) => {
                 order.order_id = orderId;
                 order.status = "created";
                 
-                // Insert into orders table
                 db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?)", [
                     orderId,
                     order.status,
@@ -129,7 +127,6 @@ const apiRoutes = (io) => {
                     bearerToken ?? "none",
                 ]);
 
-                // Insert into order_products table
                 const productPromises = order.products.map((product) => {
                     return new Promise((resolve, reject) => {
                         db.run("INSERT INTO order_products VALUES (?, ?, ?)", [
@@ -180,14 +177,117 @@ const apiRoutes = (io) => {
         });
 
     router.route("/products")
-        .get((req, res) => {
-            db.all("SELECT * FROM products", [], (err, rows) => {
-                if (err) {
-                    return console.error(err.message);
+        .get(async (req, res) => {
+            const bearerToken = req.headers["authorization"]?.split(" ")[1];
+            if (!bearerToken) {
+                return res.status(401).json({ message: "No bearer token" });
+            }
+
+            try {
+                const row = await new Promise((resolve, reject) => {
+                    db.get(
+                        `SELECT * FROM api_keys WHERE api_key = ?`,
+                        [bearerToken],
+                        (err, row) => {
+                            if (err) reject("Server error");
+                            if (!row) reject("Invalid token");
+                            resolve(row);
+                        }
+                    );
+                });
+
+                db.all("SELECT * FROM products", [], (err, rows) => {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    res.json(rows);
+                });
+            } catch (error) {
+                console.error(error);
+                if (error === "Invalid token") {
+                    return res.status(401).json({ message: error });
+                } else {
+                    return res.status(500).json({ message: "An error occurred" });
                 }
-                res.json(rows);
-            });
-    });
+            }
+        });
+
+    router.route("/partner-orders")
+        .get(async (req, res) => {
+            const bearerToken = req.headers["authorization"]?.split(" ")[1];
+            if (!bearerToken) {
+                return res.status(401).json({ message: "No bearer token" });
+            }
+
+            try {
+                const row = await new Promise((resolve, reject) => {
+                    db.get(
+                        `SELECT * FROM api_keys WHERE api_key = ?`,
+                        [bearerToken],
+                        (err, row) => {
+                            if (err) reject("Server error");
+                            if (!row) reject("Invalid token");
+                            resolve(row);
+                        }
+                    );
+                });
+
+                db.all(
+                    "SELECT * " +
+                    "FROM orders " +
+                    "JOIN order_products ON orders.id = order_products.order_id " +
+                    "JOIN products ON order_products.product_id = products.id " +
+                    "WHERE orders.external_api_key = ?",
+                    [bearerToken],
+                    (err, rows) => {
+                        if (err) {
+                            return console.error(err.message);
+                        }
+                
+                        // Organize the data into a more structured format
+                        const ordersWithProducts = rows.reduce((acc, row) => {
+                            // Check if the order already exists in the accumulator
+                            const existingOrder = acc.find((o) => o.order_id === row.order_id);
+                
+                            if (existingOrder) {
+                                // Add the product information to the existing order
+                                existingOrder.products.push({
+                                    product_id: row.product_id,
+                                    product_name: row.product_name,
+                                    quantity: row.quantity,
+                                });
+                            } else {
+                                // Create a new order entry in the accumulator
+                                acc.push({
+                                    order_id: row.order_id,
+                                    status: row.status,
+                                    customer_name: row.customer_name,
+                                    customer_phone: row.customer_phone,
+                                    store_name: row.store_name,
+                                    external_api_key: row.external_api_key,
+                                    products: [{
+                                        product_id: row.product_id,
+                                        product_name: row.product_name,
+                                        quantity: row.quantity,
+                                    }],
+                                    // Include other order fields as needed
+                                });
+                            }
+
+                            return acc;
+                        }, []);
+                        res.json(ordersWithProducts);
+                    }
+                );
+            } catch (error) {
+                console.error(error);
+                if (error === "Invalid token") {
+                    return res.status(401).json({ message: error });
+                } else {
+                    return res.status(500).json({ message: "An error occurred" });
+                }
+            }
+        });
 
     router.route("/loadtest").get((req, res) => {
         function calculateSumOfNumbers(n) {
