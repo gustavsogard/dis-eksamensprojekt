@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Dette er dokumentationen for JUICES.LIVE API, designet til eksterne partnere. Her finder du information om forskellige endpoints, der muliggør oprettelse og hentning af ordrer, produkter og butikker. API'et bruger HTTPS-protokollen og kræver autorisation via Bearer Token. Se dokumentationen for detaljer om hvert endpoint, parametre og svar.",
+    "description": "Dette er dokumentationen for JUICES.LIVE API, designet til eksterne partnere. Her finder du information om forskellige endpoints, der muliggør oprettelse og hentning af ordrer, produkter og butikker. API'et bruger HTTPS-protokollen og kræver autorisation via Bearer Token. For at benytte denne Swagger UI side til at sende forespørgsler, skal du klikke 'Authorize' og skrive 'Bearer [din token]' – det vil tilføje en 'Authorization' HTTP header i alle requests. Se dokumentationen for detaljer om hvert endpoint, parametre og svar.",
     "version": "1.0.0",
     "title": "JUICES.LIVE API",
     "contact": { "email": "guso22ab@student.cbs.dk" },
