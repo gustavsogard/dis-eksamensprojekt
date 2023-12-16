@@ -18,7 +18,7 @@ const sendSMS = (customer_phone, status, encryptFlag = true) => {
     client.messages
         .create({
             body: messages[status],
-            from: '++12057746145',
+            from: '+12057746145',
             to: encryptFlag ? decryptNum(customer_phone) : customer_phone
         })
 }
