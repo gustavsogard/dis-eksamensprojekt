@@ -1,7 +1,7 @@
 # Velkommen Til JUICES.LIVE 🧃
 
 ## Beskrivelse Af Projektet 📝
-Juices.live er det nyeste led i Joe & the Juice's digitale transformation. Dette projekt fokuserer på in-house software til at optimere ordrehåndteringen i Joe's lokationer globalt. Ved at gøre brug af Socket.io kan medarbejdere se øjeblikkelige ændringer i ordrerne, hvilket forbedrer samarbejdet og hastigheden af ordrehåndteringen.
+Juices.live er det nyeste led i Joe & The Juice's digitale transformation. Dette projekt fokuserer på in-house software til at optimere ordrehåndteringen i Joe's lokationer globalt. Ved at gøre brug af Socket.io kan medarbejdere se øjeblikkelige ændringer i ordrerne, hvilket forbedrer samarbejdet og hastigheden af ordrehåndteringen.
 
 ### Funktioner
 - Interface lignende Trello til håndtering af ordrer.
@@ -24,7 +24,7 @@ Juices.live er det nyeste led i Joe & the Juice's digitale transformation. Dette
 3. Kør ```npm i``` for at installere moduler.
 4. Opret en kopi af filen `.env.example` og omdøb den til `.env`.
 5. Udfyld de nødvendige miljøvariabler i `.env`-filen.
-6. Kør ````node server.js`` for at starte serveren.
+6. Kør ```node server.js``` for at starte serveren.
 
 Du kan nu besøge [http://localhost:3000](http://localhost:3000) for at udforske projektet lokalt.
 
