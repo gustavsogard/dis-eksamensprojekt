@@ -64,8 +64,9 @@ const init = () => {
         });
 
         //Create 10 salts and insert into stores database hashing the password
-        salt_rounds = 10;
-
+        
+        const saltRounds = 10;
+        const salt = bcrypt.genSaltSync(saltRounds);
         stores.forEach(async (store) => {
             db.get(
                 `SELECT * FROM stores WHERE store_name = ?`,
@@ -80,7 +81,7 @@ const init = () => {
                         db.run(`INSERT INTO stores VALUES (?, ?, ?)`, [
                             store.id,
                             store.store_name,
-                            bcrypt.hashSync(store.password, salt_rounds),
+                            bcrypt.hashSync(store.password, salt),
                         ]);
                     }
                 }
