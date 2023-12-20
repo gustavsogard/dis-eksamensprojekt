@@ -1,5 +1,5 @@
 const { db } = require("./init");
-
+// statusChange that updates the status of an order
 const statusChange = (orderId, status) => {
     db.run(
       `UPDATE orders SET status = ? WHERE id = ?`,
@@ -12,7 +12,7 @@ const statusChange = (orderId, status) => {
     );
   };
 
-
+// getOrder that returns an order based on the orderId
 const getOrder = (orderId) => {
     return new Promise((res, rej) => {
       db.get(`SELECT * FROM orders WHERE id = ?`, [orderId], (err, row) => {

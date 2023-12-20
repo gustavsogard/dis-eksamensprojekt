@@ -3,11 +3,10 @@ const db = new sqlite3.Database("./db.sqlite");
 
 const bcrypt = require("bcrypt");
 const { encryptNum } = require("../crypt");
-
+// Import data from data.js
 const { api_keys, orders, stores, products, order_products } = require("./data");
 
-// SQLite database
-
+// SQLite database initialization
 const init = () => {
     db.serialize(function () {
         console.log("Creating databases if they don't exist");
@@ -88,7 +87,7 @@ const init = () => {
             );
         });
 
-        //Insert into products database
+        // Insert into products database 
         products.forEach(async (product) => {
             db.get(
                 `SELECT * FROM products WHERE product_name = ?`,
@@ -109,7 +108,7 @@ const init = () => {
             );
         });
 
-        //Insert into order_products database
+        // Insert into order_products database 
         order_products.forEach(async (order_product) => {
             db.get(
                 `SELECT * FROM order_products WHERE order_id = ? AND product_id = ?`,

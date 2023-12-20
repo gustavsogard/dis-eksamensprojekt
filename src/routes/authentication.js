@@ -9,15 +9,17 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const { db } = require("../lib/database/init");
-
+// cookieParser middleware
 router.use(cookieParser());
+// bodyParser middleware
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
-
+// authentication route
 router.route("/authentication").post((req, res) => {
+    // password defineres fra body og lokation fra body
     const password = req.body.password;
     const locationName = req.body.locationName;
-    // først tjekke om location findes i databasen og hvis den gør, så tjekke om passwordet er korrekt
+    // tager password og lokation og sammenligner med databasen
     db.get(
       `SELECT password FROM stores WHERE store_name = ?`,
       [locationName],
@@ -28,12 +30,13 @@ router.route("/authentication").post((req, res) => {
         if (!row) {
           return res.status(401).json({ message: "Invalid location" });
         }
+        // hash bliver defineret som passwordet fra databasen
         const hash = row.password;
-  
+        // sammenligner det hashede password fra databasen med det indtastede password
         bcrypt.compare(password, hash, (err, result) => {
           if (result) {
             const token = jwt.sign({ locationName }, process.env.secret_key);
-            // gemmer den som cookie på serveren
+            // 
             res.cookie("JWT", token, {
               httpOnly: true,
               secure: true,

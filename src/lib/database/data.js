@@ -1,6 +1,6 @@
 const uuidv4 = require("uuid").v4;
 
-//Api Keys for external providers
+// Api Keys for external providers
 const api_keys = [
     {
       api_key: "1234",
@@ -12,7 +12,7 @@ const api_keys = [
     },
 ];
 
-//Dummy orders
+// Dummy orders
 const orders = [
     {
       id: uuidv4(),
@@ -32,14 +32,14 @@ const orders = [
     },
 ];
 
-//Dommy stores
+// Dummy stores
 const stores = [
     { id: uuidv4(), store_name: "Copenhagen", password: "testCPH" },
     { id: uuidv4(), store_name: "London", password: "testLD" },
     { id: uuidv4(), store_name: "New York", password: "testNY" },
 ];
 
-//Joe Products
+// Joe Product lineups
 const products = [
     { id: uuidv4(), product_name: "Sports Juice" },
     { id: uuidv4(), product_name: "Energizer" },
@@ -56,7 +56,7 @@ const products = [
     { id: uuidv4(), product_name: "Ginger Shot" },
 ];
 
-//Dummy orders and products mapping
+// Dummy orders and products mapping
 const order_products = [
     { order_id: orders[0].id, product_id: products[0].id, quantity: 2 },
     { order_id: orders[0].id, product_id: products[1].id, quantity: 1 },
