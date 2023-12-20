@@ -74,7 +74,6 @@ function submitOrder() {
         return;
     }
 
-    // Fetch products from the database
     fetch("/api/products", {
         method: "GET",
         credentials: "include",

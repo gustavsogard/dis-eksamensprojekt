@@ -1,21 +1,3 @@
-requestRoute = () => {
-    fetch('/', {
-        method: 'GET',
-        credentials: 'include',
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response error');
-        }
-        return response.text();
-    })
-    .then(html => {
-        document.body.innerHTML = html;
-    })
-    .catch(error => console.error('Error:', error));}
-
-
-
 async function authenticate() {
     const password = document.getElementById('password-input').value;
     const element = document.getElementById('location-select');
