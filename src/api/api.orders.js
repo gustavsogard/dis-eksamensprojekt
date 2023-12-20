@@ -2,21 +2,24 @@ require("dotenv").config();
 
 const express = require("express");
 const router = express.Router();
-// import the jwt library
+
+// importerer jwt og uuidv4
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-// import the encryptNum function
+
+// importerer encryptNum og sendSMS
 const { encryptNum } = require("../lib/crypt");
 const sendSMS = require("../lib/sms");
-// import the emitToLocation function
+
+// importerer emitToLocation og socketLocationMapping
 const emitToLocation = require("../lib/sockets/emitter");
 const { socketLocationMapping } = require("../lib/sockets/connection");
 
 const { db } = require("../lib/database/init");
-// creates a callback function that takes in io as object, so that socket.io can be used in the api to emit
-// contains all the routes for the api
+
+// opretter en call-backfunktion, der tager imod io som objekt, så socket.io kan bruges i API'et
 const apiRoutes = (io) => {
-    // creates an endpoint for orders, where the store name is extracted from the JWT token
+    // opretter et endpoint for /login, der tager imod en POST-request med et butiksnavn og et password i body'en
     router.route("/orders")
         .get((req, res) => {
             const token = req.cookies.JWT;
@@ -31,7 +34,7 @@ const apiRoutes = (io) => {
                     }
                 }
             );
-            // Get all orders from the database where the store name matches the store name from the JWT token
+            // henter alle ordrer fra databasen, hvor butiksnavnet matcher det, der er i JWT-tokenet
             db.all(
                 "SELECT * " +
                 "FROM orders " +
@@ -44,20 +47,20 @@ const apiRoutes = (io) => {
                         return console.error(err.message);
                     }
             
-                    // Organize the data into a more structured format
+                    // Organiserer data i en mere struktureret form
                     const ordersWithProducts = rows.reduce((acc, row) => {
-                        // Check if the order already exists in the accumulator
+                        // TJekker om ordren allerede eksisterer i accumulator
                         const existingOrder = acc.find((o) => o.order_id === row.order_id);
-                        // if the order exists, add the product information to the existing order
+                        // Hvis ordren eksisterer, tilføj produktinformation til den eksisterende ordre
                         if (existingOrder) {
-                            // Add the product information to the existing order
+                            // Tilføj produktinformation til den eksisterende ordre
                             existingOrder.products.push({
                                 product_id: row.product_id,
                                 product_name: row.product_name,
                                 quantity: row.quantity,
                             });
                         } else {
-                            // Create a new order entry in the accumulator
+                            // Opret en ny ordre i accumulator
                             acc.push({
                                 order_id: row.order_id,
                                 status: row.status,
@@ -70,29 +73,27 @@ const apiRoutes = (io) => {
                                     product_name: row.product_name,
                                     quantity: row.quantity,
                                 }],
-                                // Include other order fields as needed
                             });
                         }
-                        // return the accumulator
+                        // returner accumulatoren
                         return acc;
                     }, []);
-                    // return the orders with products
+                    // returnerer ordrer med produkter
                     res.json(ordersWithProducts);
                 }
             );
         })
-        // creates a POST endpoint for orders 
+        // laver en POST-endpoint for ordrer, hvor JWT-tokenet hentes fra cookien, og bearer-tokenet hentes fra headeren
         .post(async (req, res) => {
             try {
-                // JWT token is extracted from the cookie, and bearer token is extracted from the header
                 const jwtToken = req.cookies.JWT;
                 const bearerToken = req.headers["authorization"]?.split(" ")[1];
                 let store_name = undefined;
-                // if there is no JWT token or bearer token, return a 401 error
+                // Hvis der ikke er et JWT-token eller et bearer-token, returner en 401-fejl
                 if (!jwtToken && !bearerToken) {
                     return res.status(401).json({ message: "No jwt or bearer token" });
                 }
-                // if there is a JWT token, verify it and decode the store name
+                // Hvis der er et JWT-token, verificer det og decode butiksnavnet
                 if (jwtToken) {
                     const decoded = await new Promise((resolve, reject) => {
                         jwt.verify(jwtToken, process.env.secret_key, (err, decoded) => {
@@ -102,7 +103,7 @@ const apiRoutes = (io) => {
                     });
                     store_name = decoded.locationName;
                 }
-                // if there is a bearer token select all from the api_keys table where the api_key matches the bearer token
+                // Hvis der er et bearer-token, select all fra api_keys-tabellen, hvor api_key matcher bearer-tokenet
                 if (bearerToken) {
                     const row = await new Promise((resolve, reject) => {
                         db.get(
@@ -116,12 +117,12 @@ const apiRoutes = (io) => {
                         );
                     });
                 }
-                // creates constants with the information for the database
+                // Opretter konstanter med informationer til databasen
                 const order = req.body;
                 const orderId = uuidv4();
                 order.order_id = orderId;
                 order.status = "created";
-                // insert values into the orders table and encrypt the customer phone number
+                // indsætter værdier i orders-tabellen og krypterer kundens telefonnummer
                 db.run("INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?)", [
                     orderId,
                     order.status,
@@ -130,8 +131,8 @@ const apiRoutes = (io) => {
                     store_name ?? order.store_name,
                     bearerToken ?? "none",
                 ]);
-                // create the product mapping, and insert values into the order_products table
-                // if there is an error select all from products where id is the product id
+                // Opretter produktmapping og indsætter værdier i order_products-tabellen
+                // Hvis der er en fejl, select all fra products, hvor id er produkt-id'et
 
                 const productPromises = order.products.map((product) => {
                     return new Promise((resolve, reject) => {
@@ -147,10 +148,10 @@ const apiRoutes = (io) => {
                                     if (err) {
                                         reject(err);
                                     }
-                                    // if there is no row or the row is undefined, reject the promise
+                                    // hvis der ikke er en række eller rækken er udefineret, reject promise
                                     if (row == undefined || !row) {
                                         reject("Product not available");
-                                    // else set the product name to the product name from the database
+                                    // ellers sæt produktets navn til produktets navn fra databasen
                                     } else {
                                         product.product_name = row.product_name;
                                         resolve();
@@ -160,21 +161,19 @@ const apiRoutes = (io) => {
                         });
                     });
                 });
-                // send an SMS to the customer, and emit the order to the location
+                // send en SMS til kunden og emit ordren til butikken
                 Promise.all(productPromises)
                     .then(() => {
                         sendSMS(order.customer_phone, "created", false);
                         emitToLocation(io, socketLocationMapping, store_name ?? order.store_name, "newOrder", order);
                         console.log("Order:", order)
-                        res.json(order);
-                        
+                        res.json(order);  
                     })
-                    // if there is an error, return a 500 error
+                    // hvis der er en fejl, returner en 500-fejl
                     .catch((error) => {
                         console.error(error);
                         return res.status(500).json({ message: "An error occurred" });
                     });
-                
             } catch (error) {
                 console.error(error);
                 if (error === "Invalid token") {
@@ -184,15 +183,14 @@ const apiRoutes = (io) => {
                 }
             }
         });
-    // route for partner-orders
+    // opretter en PUT-endpoint for ordrer, hvor JWT-tokenet hentes fra cookien, og bearer-tokenet hentes fra headeren
     router.route("/partner-orders")
-    // GET endpoint for partner-orders, where the bearer token is extracted from the header
         .get(async (req, res) => {
             const bearerToken = req.headers["authorization"]?.split(" ")[1];
             if (!bearerToken) {
                 return res.status(401).json({ message: "No bearer token" });
             }
-            // select all from the api_keys table where the api_key matches the bearer token
+            // select all fra api_keys-tabellen, hvor api_key matcher bearer-tokenet
             try {
                 const row = await new Promise((resolve, reject) => {
                     db.get(
@@ -205,7 +203,7 @@ const apiRoutes = (io) => {
                         }
                     );
                 });
-                // select all from the orders table where the external_api_key matches the bearer token
+                // select all fra orders-tabellen, hvor external_api_key matcher bearer-tokenet
                 db.all(
                     "SELECT * " +
                     "FROM orders " +
@@ -217,20 +215,19 @@ const apiRoutes = (io) => {
                         if (err) {
                             return console.error(err.message);
                         }
-                        // Organize the data into a more structured format
+                        // Organiserer data i en mere struktureret form
                         const ordersWithProducts = rows.reduce((acc, row) => {
-                            // Check if the order already exists in the accumulator
+                            // tjek om ordren allerede eksisterer i accumulator
                             const existingOrder = acc.find((o) => o.order_id === row.order_id);
-
                             if (existingOrder) {
-                                // Add the product information to the existing order
+                                // tilføj produktinformation til den eksisterende ordre
                                 existingOrder.products.push({
                                     product_id: row.product_id,
                                     product_name: row.product_name,
                                     quantity: row.quantity,
                                 });
                             } else {
-                                // Create a new order entry in the accumulator
+                                // opret en ny ordre i accumulator
                                 acc.push({
                                     order_id: row.order_id,
                                     status: row.status,
@@ -245,10 +242,9 @@ const apiRoutes = (io) => {
                                     }],
                                 });
                             }
-                            // return the accumulator
                             return acc;
                         }, []);
-                        // return the orders with products
+                        // returner ordrer med produkter
                         res.json(ordersWithProducts);
                     }
                 );
@@ -261,19 +257,18 @@ const apiRoutes = (io) => {
                 }
             }
         });
-    // route for products
     router.route("/products")
-    // GET endpoint for products, where the JWT token is extracted from the cookie and the bearer token is extracted from the header
+    // opretter en GET-endpoint for produkter, hvor JWT-tokenet hentes fra cookien, og bearer-tokenet hentes fra headeren
         .get(async (req, res) => {
             try {
                 const jwtToken = req.cookies.JWT;
                 const bearerToken = req.headers["authorization"]?.split(" ")[1];
 
-                // if there is no JWT token or bearer token, return a 401 error 
+                // hvis der ikke er et JWT-token eller et bearer-token, returner en 401-fejl
                 if (!jwtToken && !bearerToken) {
                     return res.status(401).json({ message: "No jwt or bearer token" });
                 }
-                // if there is a JWT token, decode it
+                // hvis der er et JWT-token, verificer det og decode butiksnavnet
                 if (jwtToken) {
                     const decoded = await new Promise((resolve, reject) => {
                         jwt.verify(jwtToken, process.env.secret_key, (err, decoded) => {
@@ -282,10 +277,10 @@ const apiRoutes = (io) => {
                         });
                     });
                 }
-                // if there is a bearer token, select all from the api_keys table where the api_key matches the bearer token
+                // hvis der er et bearer-token, select all fra api_keys-tabellen, hvor api_key matcher bearer-tokenet
                 if (bearerToken) {
                     const row = await new Promise((resolve, reject) => {
-                        // select all from the api_keys table where the api_key matches the bearer token
+                        // vælg alt fra api_keys-tabellen, hvor api_key matcher bearer-tokenet
                         db.get(
                             `SELECT * FROM api_keys WHERE api_key = ?`,
                             [bearerToken],
@@ -297,7 +292,7 @@ const apiRoutes = (io) => {
                         );
                     });
                 }
-                // select all from the products table
+                // select all fra products-tabellen
                 db.all("SELECT * FROM products", [], (err, rows) => {
                     if (err) {
                         return console.error(err.message);
@@ -314,14 +309,13 @@ const apiRoutes = (io) => {
             }
         });
     
-    // Create an endpoint for /stores that returns a list of stores just like the way /products returns a list of products only if you have a valid bearer token:
+    // opret et endpoint for /stores der returnerer en liste over butikker på samme måde som /products returnerer en liste over produkter, hvis du har en gyldig bearer-token:
     router.route("/stores")
         .get(async (req, res) => {
             const bearerToken = req.headers["authorization"]?.split(" ")[1];
             if (!bearerToken) {
                 return res.status(401).json({ message: "No bearer token" });
             }
-
             try {
                 const row = await new Promise((resolve, reject) => {
                     db.get(
@@ -350,8 +344,7 @@ const apiRoutes = (io) => {
                 }
             }
         });
-    // Create an endpoint for /login that accepts a POST request with a store name and password in the body
-    // and returns a JWT token if the password is correct:
+    // opret et endpoint for /login der accepterer en POST-request med et butiksnavn og et password i body'en og returnerer et JWT-token, hvis password'et er korrekt:
     router.route("/loadtest").get((req, res) => {
         function calculateSumOfNumbers(n) {
             let sum = 0;
@@ -365,5 +358,5 @@ const apiRoutes = (io) => {
 
     return router;
 }
-// export the apiRoutes function
+// eksporter routeren
 module.exports = apiRoutes;

@@ -1,32 +1,32 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-// middleware that checks if the token is valid
+// middleware der tjekker om token er gyldig
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.JWT;
-  // if the token exists, verify it
+  // hvis token eksisterer, verificer det
     if (token) {
       jwt.verify(token, process.env.secret_key, (err) => {
         if (err) {
-          // if the token is invalid, redirect to login
+          // hvis token er ugyldig, omdiriger til login
           if (req.path !== "/login") {
           res.redirect("/login");
           }
         } else{
-          // if the token is valid, redirect to home
+          // hvis token er gyldig, omdiriger til hjemmesiden
             if (req.path === "/login") {
                 res.redirect("/");
             }
         }
       })
     } 
-    // if the token does not exist, redirect to login
+    // hvis token ikke eksisterer, omdiriger til login
     else {
       if (req.path !== "/login") {
         res.redirect("/login");
       }
     }
-    // call the next middleware
+    // kald næste middleware
     next();
   };
 

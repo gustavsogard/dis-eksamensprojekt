@@ -3,10 +3,11 @@ const db = new sqlite3.Database("./db.sqlite");
 
 const bcrypt = require("bcrypt");
 const { encryptNum } = require("../crypt");
-// Import data from data.js
+
+// Importer dummy data fra data.js
 const { api_keys, orders, stores, products, order_products } = require("./data");
 
-// SQLite database initialization
+// Initialiserer databasen med SQLite3
 const init = () => {
     db.serialize(function () {
         console.log("Creating databases if they don't exist");
@@ -16,7 +17,7 @@ const init = () => {
         db.run(`CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, product_name TEXT NOT NULL UNIQUE);`);
         db.run(`CREATE TABLE IF NOT EXISTS order_products (order_id TEXT NOT NULL, product_id TEXT NOT NULL, quantity INTEGER NOT NULL, PRIMARY KEY (order_id, product_id), FOREIGN KEY (order_id) REFERENCES orders (id), FOREIGN KEY (product_id) REFERENCES products (id));`);
 
-        // Insert into api_keys database
+        // Indsætter API nøgler i databasen
         api_keys.forEach(async (key) => {
             db.get(
                 `SELECT * FROM api_keys WHERE external_name = ?`,
@@ -37,7 +38,7 @@ const init = () => {
             );
         });
 
-        //Insert into orders database but encrypt the phone number
+        // Indsætter ordrer i databasen
         orders.forEach(async (order) => {
             db.get(
                 `SELECT * FROM orders WHERE id = ?`,
@@ -62,8 +63,8 @@ const init = () => {
             );
         });
 
-        //Create 10 salts and insert into stores database hashing the password
-        
+        //Opretter 10 salts og bruger dem til at hashe adgangskoden
+        //Indsætter butikker i databasen
         const saltRounds = 10;
         const salt = bcrypt.genSaltSync(saltRounds);
         stores.forEach(async (store) => {
@@ -87,7 +88,7 @@ const init = () => {
             );
         });
 
-        // Insert into products database 
+        // Indsætter produkter i databasen
         products.forEach(async (product) => {
             db.get(
                 `SELECT * FROM products WHERE product_name = ?`,
@@ -108,7 +109,7 @@ const init = () => {
             );
         });
 
-        // Insert into order_products database 
+        // Indsætter ordrer og produkter i databasen
         order_products.forEach(async (order_product) => {
             db.get(
                 `SELECT * FROM order_products WHERE order_id = ? AND product_id = ?`,
