@@ -1,3 +1,5 @@
+// authenticate funktionen tager passworded og lokationen fra input felterne og sender dem til databasen
+// ved et POST kald til /authentication
 async function authenticate() {
     const password = document.getElementById('password-input').value;
     const element = document.getElementById('location-select');
@@ -10,19 +12,18 @@ async function authenticate() {
         }
     })
     .then(response => response.json())
-    // check if token is valid
+// hvis der er en response token så sættes vinduet til /
     .then(response => {
         if (response.token) {
             window.location.href = '/';
             return;
         } else {
-            // skal det her være der?
             console.log("Authentication failed");
         }
     })
 }
 
-// JavaScript to toggle password visibility
+// tager passwordet og gør det synligt, hvis det er skjult og omvendt
 function togglePasswordVisibility() {
     var passwordInput = document.getElementById('password-input');
     var togglePassword = document.getElementById('toggle-password');

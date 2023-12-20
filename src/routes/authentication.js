@@ -36,14 +36,14 @@ router.route("/authentication").post((req, res) => {
         bcrypt.compare(password, hash, (err, result) => {
           if (result) {
             const token = jwt.sign({ locationName }, process.env.secret_key);
-            // 
+            // cookien sættes som JWT, med httpOnly, secure og samesite
             res.cookie("JWT", token, {
               httpOnly: true,
               secure: true,
               samesite: "strict",
             });
   
-            // Send response
+            // Sender JWT til klienten
             res.json({ token });
           } else {
             res.status(401).json({ message: "Invalid password" });
