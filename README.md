@@ -1,7 +1,7 @@
 # Velkommen Til JUICES.LIVE 🧃
 
 ## Beskrivelse Af Projektet 📝
-Juices.live er det nyeste led i Joe & The Juice's digitale transformation. Dette projekt fokuserer på in-house software til at optimere ordrehåndteringen i Joe's lokationer globalt. Ved at gøre brug af Socket.io kan medarbejdere se øjeblikkelige ændringer i ordrerne, hvilket forbedrer samarbejdet og hastigheden af ordrehåndteringen.
+Juices.live er det nyeste led i Joe & the Juice's digitale transformation. Dette projekt fokuserer på in-house software til at optimere ordrehåndteringen i Joe's lokationer globalt. Ved at gøre brug af Socket.io kan medarbejdere se øjeblikkelige ændringer i ordrerne, hvilket forbedrer samarbejdet og hastigheden af ordrehåndteringen.
 
 ### Funktioner
 - Interface lignende Trello til håndtering af ordrer.
