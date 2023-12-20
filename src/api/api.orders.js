@@ -175,7 +175,7 @@ const apiRoutes = (io) => {
                 }
             }
         });
-
+        
     router.route("/partner-orders")
         .get(async (req, res) => {
             const bearerToken = req.headers["authorization"]?.split(" ")[1];
@@ -207,7 +207,9 @@ const apiRoutes = (io) => {
                         if (err) {
                             return console.error(err.message);
                         }
-                
+                        // yderligere kode bliver eksekveret nedenfor
+
+
                         // Organize the data into a more structured format
                         const ordersWithProducts = rows.reduce((acc, row) => {
                             // Check if the order already exists in the accumulator
@@ -258,7 +260,7 @@ const apiRoutes = (io) => {
             try {
                 const jwtToken = req.cookies.JWT;
                 const bearerToken = req.headers["authorization"]?.split(" ")[1];
-                let store_name = undefined;
+
     
                 if (!jwtToken && !bearerToken) {
                     return res.status(401).json({ message: "No jwt or bearer token" });
@@ -271,7 +273,6 @@ const apiRoutes = (io) => {
                             resolve(decoded);
                         });
                     });
-                    store_name = decoded.locationName;
                 }
     
                 if (bearerToken) {
