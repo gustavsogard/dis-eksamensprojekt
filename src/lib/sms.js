@@ -1,19 +1,21 @@
 require('dotenv').config();
-// Twilio Credentials from .env
+
+// Twilio-legitimationsoplysninger fra .env
 const accountSid = process.env.accountSid;
 const authToken = process.env.authToken;
-// require the Twilio module and create a client
+// henter Twilio-modulet og opretter en klient
 const client = require('twilio')(accountSid, authToken);
 
 const { decryptNum } = require('./crypt');
-// Messages to send to the customer for each status
+
+// Opretter beskeder, der skal sendes til kunden for hver status
 const messages = {
-    created: 'Hey det er JOE. Din ordre er blevet modtaget, du vil få en besked når den er igangsat.',
-    accepted: 'Hey det er JOE. Din ordre er igangsat, du vil få en besked når den er klar.',
-    done: 'Hey det er JOE. Din ordre er klar til afhentning.',
-    rejected: 'Hey det er JOE. Din ordre er blevet afvist, kontakt os venligst for mere information.',
+    created: 'Hej, det er JOE. Din ordre er blevet modtaget, du vil få en besked, når den er igangsat.',
+    accepted: 'Hej, det er JOE. Din ordre er igangsat, du vil få en besked, når den er klar.',
+    done: 'Hej, det er JOE. Din ordre er klar til afhentning.',
+    rejected: 'Hej, det er JOE. Din ordre er blevet afvist, kontakt os venligst for mere information.',
 }
-// sends an sms to the customer with the message based on the status
+// Sender en sms til kunden med beskeden baseret på status
 const sendSMS = (customer_phone, status, encryptFlag = true) => {
     client.messages
         .create({
