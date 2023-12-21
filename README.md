@@ -31,6 +31,11 @@ Du kan nu besøge [http://localhost:3000](http://localhost:3000) for at udforske
 ## Live Projekt 🌐
 Derudover er det live projekt hosted på [https://juices.live](https://juices.live) via en DigitalOcean droplet.
 
+## Koder til de 3 stores på Juices.live 🔑
+- Copenhagen: testCPH
+- London: testLD
+- New York: testNY
+
 ## Dokumentation Af API 📄
 Dokumentation for API'et er tilgængelig på [https://juices.live/docs](https://juices.live/docs) via Swagger UI.
 Her kan du se alle endpoints, deres parametre og svar samt teste dem direkte fra browseren.
