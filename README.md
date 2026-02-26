@@ -1,47 +1,76 @@
-# Velkommen Til JUICES.LIVE 🧃
+# JUICES.LIVE
 
-## Beskrivelse Af Projektet 📝
-Juices.live er det nyeste led i Joe & the Juice's digitale transformation. Dette projekt fokuserer på in-house software til at optimere ordrehåndteringen i Joe's lokationer globalt. Ved at gøre brug af Socket.io kan medarbejdere se øjeblikkelige ændringer i ordrerne, hvilket forbedrer samarbejdet og hastigheden af ordrehåndteringen.
+**In-house order management for multi-location juice bars.**  
+A university exam project demonstrating a full-stack system for real-time order handling, external API integration, and SMS notifications.
 
-### Funktioner
-- Interface lignende Trello til håndtering af ordrer.
-- Globalt perspektiv, der giver indblik i ordrer på tværs af forskellige lokationer.
-- Integration med 3. parts leverandører (fx. JustEat, UberEats) gennem en ekstern API.
-- Dokumentation for API tilgængelig med Swagger UI.
-- Udnytter Twilio til SMS-tjenester for at holde kunder informeret om ordrestatus.
+---
 
-## Primære Node Moduler 📦
-- Socket.io
-- Swagger UI
-- Twilio
-- SQLite
-- Bcrypt
-- Express
+## Business Problem
 
-## Kør Projektet Lokalt 🖥️
-1. Clone repositoryet.
-2. Naviger til mappen `src`.
-3. Kør ```npm i``` for at installere moduler.
-4. Opret en kopi af filen `.env.example` og omdøb den til `.env`.
-5. Udfyld de nødvendige miljøvariabler i `.env`-filen.
-6. Kør ```node server.js``` for at starte serveren.
+Joe & the Juice and similar multi-location brands need a single in-house system to manage orders across stores and from third-party delivery partners (e.g. JustEat, UberEats). Staff need instant visibility into order status and the ability to move orders through stages without refreshing the page. This project addresses that by providing a Trello-like order board with live updates, a documented REST API for external partners, and optional SMS updates to customers.
 
-Du kan nu besøge [http://localhost:3000](http://localhost:3000) for at udforske projektet lokalt.
+---
 
-## Live Projekt 🌐
-Derudover er det live projekt hosted på [https://juices.live](https://juices.live) via en DigitalOcean droplet.
+## Features
 
-## Koder til de 3 stores på Juices.live 🔑
-- Copenhagen: testCPH
-- London: testLD
-- New York: testNY
+- **Trello-style order board** — Drag-and-drop order management with instant updates across all connected clients.
+- **Multi-location view** — See and manage orders across different store locations.
+- **External partner API** — REST API with Bearer token auth for integrations (e.g. JustEat, UberEats).
+- **API documentation** — Interactive Swagger UI for exploring and testing endpoints.
+- **SMS notifications** — Twilio integration to keep customers informed about order status.
 
-## Dokumentation Af API 📄
-Dokumentation for API'et er tilgængelig på [https://juices.live/docs](https://juices.live/docs) via Swagger UI.
-Her kan du se alle endpoints, deres parametre og svar samt teste dem direkte fra browseren.
+---
 
-## Lavet Af 🧑‍💻
-- [Amanda Frithjof Bonde](https://www.linkedin.com/in/amandabonde), 162423
-- [Thøger Elung-Jensen](https://www.linkedin.com/in/th%C3%B8ger-elung-jensen-b687b9249), 162129
-- [Troels Philip Rohde](https://www.linkedin.com/in/troelsprohde/), 161078
-- [Gustav Christian Søgård](https://www.linkedin.com/in/gustavsogard/), 160921
+## Tech Stack
+
+| Layer        | Technologies |
+|-------------|--------------|
+| **Backend** | Node.js, Express |
+| **Real-time** | Socket.io |
+| **Database** | SQLite (sqlite3) |
+| **Auth** | JWT (jsonwebtoken), bcrypt, cookie-parser |
+| **API docs** | Swagger UI (swagger-ui-express) |
+| **SMS** | Twilio |
+| **Frontend** | Vanilla HTML/CSS/JS, static client served by Express |
+
+---
+
+## How to Run Locally
+
+1. Clone the repository.
+2. Navigate to the `src` folder.
+3. Install dependencies: `npm i`
+4. Copy `.env.example` to `.env` and fill in the required environment variables (e.g. JWT secret, Twilio credentials if using SMS).
+5. Start the server: `node server.js`
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+**Demo store logins** (for local or live testing):
+
+| Store      | Password |
+|-----------|----------|
+| Copenhagen | testCPH |
+| London     | testLD  |
+| New York   | testNY  |
+
+---
+
+## Live Demo
+
+The project is hosted at **[https://juices.live](https://juices.live)** on a DigitalOcean droplet.  
+API documentation (Swagger UI) is available at **[https://juices.live/docs](https://juices.live/docs)**.
+
+---
+
+## Project Context
+
+This repository is a **university exam project** (DIS). It is built to demonstrate full-stack development, real-time communication, API design, and integration with third-party services—not as production-ready enterprise software.
+
+---
+
+## Authors
+
+- [Amanda Frithjof Bonde](https://www.linkedin.com/in/amandabonde) — 162423  
+- [Thøger Elung-Jensen](https://www.linkedin.com/in/th%C3%B8ger-elung-jensen-b687b9249) — 162129  
+- [Troels Philip Rohde](https://www.linkedin.com/in/troelsprohde/) — 161078  
+- [Gustav Christian Søgård](https://www.linkedin.com/in/gustavsogard/) — 160921  
